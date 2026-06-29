@@ -4,10 +4,38 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>404 - SIGNAL LOST</title>
-        <style>
-@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪓</text></svg>">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 
-/* Base Setup */
+        <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --text-color: #33ff33;
+            --accent-color: #33ff33;
+            --scanline-color: rgba(0, 0, 0, 0.5);
+            --button-bg: #111;
+            --button-border: #33ff33;
+            --button-hover-bg: #33ff33;
+            --button-hover-text: #000;
+            --shadow-glow: 0 0 10px rgba(51, 255, 51, 0.5);
+            --ice-cream-opacity: 0.15;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f0f4f8;
+            --text-color: #222;
+            --accent-color: #ff85a2;
+            --scanline-color: rgba(255, 255, 255, 0.3);
+            --button-bg: #fff;
+            --button-border: #222;
+            --button-hover-bg: #ff85a2;
+            --button-hover-text: #fff;
+            --shadow-glow: 0 0 5px rgba(0, 0, 0, 0.2);
+            --ice-cream-opacity: 0.25;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -15,106 +43,153 @@
         }
 
         body, html {
-            background-color: #050505;
-            color: #33ff33;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             font-family: 'VT323', monospace;
             font-size: 24px;
-            height: 100%;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
         }
 
-        /* CRT Screen Simulation */
-        .crt-container {
-            width: 100vw;
-            height: 100vh;
-            background: #0a110a;
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                var(--scanline-color) 50%,
+                transparent 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0.6;
+        }
+
+        .bg-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            font-size: 4rem;
+            opacity: var(--ice-cream-opacity);
+            filter: blur(1px);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape:nth-child(odd) { animation-duration: 5s; animation-delay: -1s; }
+        .shape:nth-child(even) { animation-duration: 7s; animation-delay: -3s; }
+
+        .shape:nth-child(1) { top: 10%; left: 10%; animation-duration: 20s; font-size: 3rem; }
+        .shape:nth-child(2) { top: 70%; left: 80%; animation-duration: 25s; animation-delay: -5s; font-size: 5rem; }
+        .shape:nth-child(3) { top: 40%; left: 20%; animation-duration: 18s; animation-delay: -2s; font-size: 4rem; }
+        .shape:nth-child(4) { top: 80%; left: 10%; animation-duration: 22s; animation-delay: -10s; font-size: 3.5rem; }
+        .shape:nth-child(5) { top: 20%; left: 70%; animation-duration: 28s; animation-delay: -8s; font-size: 4.5rem; }
+        .shape:nth-child(6) { top: 50%; left: 90%; animation-duration: 19s; animation-delay: -3s; font-size: 3rem; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            5% { opacity: 0.95; }
+            10% { opacity: 0.9; }
+            15% { opacity: 0.95; }
+            20% { opacity: 0.99; }
+            50% { opacity: 0.95; }
+            80% { opacity: 0.9; }
+            100% { opacity: 0.97; }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .container {
+            text-align: center;
+            z-index: 5;
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            animation: flicker 0.15s infinite;
+            margin: 0 auto;
             position: relative;
-            padding: 40px;
+            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-shadow: 0 0 4px rgba(51, 255, 51, 0.5), 0 0 10px rgba(51, 255, 51, 0.3);
-            animation: textFlicker 0.15s infinite;
         }
 
-        /* Screen Vignette & Curved Bezel Shadow */
-        .crt-container::after {
-            content: " ";
-            display: block;
+        .theme-toggle {
             position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.85) 100%);
-            pointer-events: none;
-            z-index: 2;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            padding: 5px 10px;
+            font-family: 'VT323', monospace;
+            cursor: pointer;
+            z-index: 20;
+            font-size: 1rem;
         }
 
-        /* Scanlines Layer */
-        .scanlines {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(
-                rgba(18, 16, 16, 0) 50%,
-                rgba(0, 0, 0, 0.3) 50%
-                );
-            background-size: 100% 4px;
-            z-index: 3;
-            pointer-events: none;
+        .theme-toggle:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
         }
 
-        /* Rolling Screen Glitch Interlacing */
-        .scanlines::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 0%, rgba(33, 255, 33, 0.05) 10%, rgba(18, 16, 16, 0) 20%);
-            animation: scrollLine 6s linear infinite;
-        }
-
-        /* Content Formatting */
-        .terminal-content {
-            max-width: 650px;
-            width: 100%;
-            text-align: left;
-            z-index: 1;
+        .error-code {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            padding: 2px 8px;
+            font-size: 1.2rem;
+            display: inline-block;
+            margin-bottom: 20px;
         }
 
         h1 {
             font-size: 5rem;
             line-height: 1;
             margin-bottom: 20px;
-            color: #33ff33;
-        }
-
-        .error-code {
-            background-color: #33ff33;
-            color: #0a110a;
-            padding: 2px 8px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 20px;
-            text-shadow: none;
+            color: var(--text-color);
+            text-shadow: var(--shadow-glow);
+            letter-spacing: 2px;
         }
 
         p {
             margin-bottom: 20px;
-            line-height: 1.2;
+            line-height: 1.4;
+            opacity: 0.8;
         }
 
         .command-prompt {
-            color: rgba(51, 255, 51, 0.7);
+            text-align: left;
+            opacity: 0.6;
+            margin-top: 20px;
         }
 
-        /* Blinking Underscore Cursor */
         .cursor {
             display: inline-block;
             width: 12px;
             height: 24px;
-            background-color: #33ff33;
+            background-color: var(--text-color);
             animation: blink 0.8s infinite steps(1);
             vertical-align: middle;
             margin-left: 4px;
@@ -123,56 +198,87 @@
         .btn-home {
             display: inline-block;
             margin-top: 30px;
-            padding: 5px 15px;
-            border: 2px solid #33ff33;
-            color: #33ff33;
+            padding: 10px 20px;
+            border: 2px solid var(--button-border);
+            color: var(--text-color);
             text-decoration: none;
+            font-size: 1.3rem;
             transition: all 0.2s ease;
+            box-shadow: 4px 4px 0px var(--button-border);
+            background: var(--button-bg);
         }
 
         .btn-home:hover {
-            background-color: #33ff33;
-            color: #0a110a;
-            text-shadow: none;
+            background-color: var(--button-hover-bg);
+            color: var(--button-hover-text);
+            box-shadow: 4px 4px 0px var(--button-hover-bg), 0 0 15px var(--button-hover-bg);
             cursor: pointer;
         }
 
-        /* Keyframe Animations */
-        @keyframes textFlicker {
-            0% { opacity: 0.98; }
-            50% { opacity: 1; }
-            100% { opacity: 0.99; }
+        .footer {
+            margin-top: 3rem;
+            font-size: 0.8rem;
+            opacity: 0.5;
         }
 
-        @keyframes scrollLine {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+        @media (max-width: 600px) {
+            h1 { font-size: 3rem; }
+            .shape { font-size: 3rem !important; }
         }
         </style>
     </head>
-    <body>
+    <body data-theme="dark">
 
-        <div class="crt-container">
-            <div class="scanlines"></div>
+        <div class="crt-overlay"></div>
 
-            <div class="terminal-content">
-                <div class="error-code">ERROR_CODE: 0x00000194</div>
-                <h1>404 NOT FOUND</h1>
-                <p>A fatal exception has occurred at your request routing logic. The specified target vector could not be located in the current volume directory.</p>
+        <div class="bg-shapes">
+            <div class="shape">🍦</div>
+            <div class="shape">🍨</div>
+            <div class="shape">🍧</div>
+            <div class="shape">🍦</div>
+            <div class="shape">🍨</div>
+            <div class="shape">🍧</div>
+        </div>
 
-                <p class="command-prompt">VARDEN-OS V1.0.4<br>
-                > locate --missing-sectors<br>
-                > sector tracking timed out...<br>
-                > <span class="cursor"></span></p>
+        <button class="theme-toggle" id="themeToggle">[ LIGHT ]</button>
 
-                <a href="/" class="btn-home">REBOOT TO CORE SYSTEMS (HOME)</a>
+        <div class="container">
+            <div class="error-code">ERROR_CODE: 0x00000194</div>
+            <h1>404 NOT FOUND</h1>
+            <p>A fatal exception has occurred at your request routing logic. The specified target vector could not be located in the current volume directory.</p>
+
+            <p class="command-prompt">VARDEN-OS V1.0.4<br>
+            > locate --missing-sectors<br>
+            > sector tracking timed out...<br>
+            > <span class="cursor"></span></p>
+
+            <a href="/" class="btn-home">REBOOT TO CORE SYSTEMS (HOME)</a>
+
+            <div class="footer">
+                <p>⚠️ Access may be restricted.</p>
             </div>
         </div>
 
+        <script>
+            const toggleBtn = document.getElementById('themeToggle');
+            const body = document.body;
+
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            body.setAttribute('data-theme', currentTheme);
+            updateButtonText(currentTheme);
+
+            toggleBtn.addEventListener('click', () => {
+                const current = body.getAttribute('data-theme');
+                const newTheme = current === 'dark' ? 'light' : 'dark';
+
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateButtonText(newTheme);
+            });
+
+            function updateButtonText(theme) {
+                toggleBtn.textContent = theme === 'dark' ? '[ LIGHT ]' : '[ DARK ]';
+            }
+        </script>
     </body>
 </html>
