@@ -98,7 +98,11 @@
             font-size: 4rem;
             opacity: var(--ice-cream-opacity);
             filter: blur(1px);
+            animation: float 6s ease-in-out infinite;
         }
+
+        .shape:nth-child(odd) { animation-duration: 5s; animation-delay: -1s; }
+        .shape:nth-child(even) { animation-duration: 7s; animation-delay: -3s; }
 
         /* Random positions and delays for ice creams */
         .shape:nth-child(1) { top: 10%; left: 10%; animation-duration: 20s; font-size: 3rem; }
@@ -111,6 +115,11 @@
         @keyframes cyberPulse {
             0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 2px #00ff00); }
             50% { opacity: 1; filter: drop-shadow(0 0 8px #00ff00); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
         }
 
         @keyframes flicker {
