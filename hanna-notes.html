@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ساختار و عملکرد سلول پروکاریوتی</title>
+
+    <!-- Google Fonts: Vazirmatn for modern Persian typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Estedad:wght@100..900&display=swap');
+        :root {
+            /* Dark Theme (Default) */
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent-color: #64b5f6; /* Soft Blue */
+            --border-color: #333333;
+            --code-bg: #2d2d2d;
+            --figure-bg: #252525;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --font-main: 'Estedad', sans-serif;
+        }
+
+        [data-theme="light"] {
+            /* Light Theme */
+            --bg-color: #fdfbf7; /* Warm white for less strain */
+            --surface-color: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #546e7a;
+            --accent-color: #1976d2;
+            --border-color: #e0e0e0;
+            --code-bg: #f5f5f5;
+            --figure-bg: #f9f9f9;
+            --shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* Remove Android click highlight */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.8;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        /* Layout Container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 80px; /* Space for footer/scroll */
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--accent-color);
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        /* Typography */
+        h2 {
+            font-size: 1.4rem;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            border-right: 4px solid var(--accent-color);
+            padding-right: 12px;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+            padding-right: 25px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Figures and Captions */
+        figure {
+            background-color: var(--figure-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        figcaption {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            font-style: italic;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .figure-placeholder {
+            background-color: var(--code-bg);
+            color: var(--text-secondary);
+            padding: 20px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            direction: ltr; /* Keep chemical formulas/diagrams LTR if needed */
+            text-align: left;
+            overflow-x: auto;
+        }
+
+        /* Review Questions Box */
+        .review-box {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .review-box h3 {
+            margin-top: 0;
+            color: var(--accent-color);
+        }
+
+        /* Page Indicators */
+        .page-marker {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin: 40px 0 20px 0;
+            position: relative;
+        }
+
+        .page-marker::before, .page-marker::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 30%;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+
+        .page-marker::before { right: 0; }
+        .page-marker::after { left: 0; }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            padding: 0;
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--surface-color);
+            border-color: var(--accent-color);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Floating Background Elements (Subtle) */
+        .bg-shape {
+            position: fixed;
+            z-index: -1;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        .shape-1 { top: 10%; left: -50px; font-size: 10rem; }
+        .shape-2 { bottom: 10%; right: -50px; font-size: 12rem; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 1.2rem; }
+            h2 { font-size: 1.2rem; }
+            p { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Subtle Background Shapes -->
+    <div class="bg-shape shape-1">🦠</div>
+    <div class="bg-shape shape-2">🧬</div>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1>فصل ۳: ساختار و عملکرد سلول پروکاریوتی</h1>
+                <div class="subtitle">Hanna | Notes</div>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark/Light Mode">
+                <span id="themeIcon">☀️</span>
+                <!-- <span id="themeText">Light</span> -->
+            </button>
+        </header>
+
+        <!-- CONTENT STARTS HERE (Order: Page 55 -> 70) -->
+
+	<!-- PAGE 39 -->
+        <div class="page-marker">صفحه ۳۹</div>
+
+        <div class="review-box" style="margin-top: 20px;">
+            <h3>پیش‌نمایش (Preview)</h3>
+            <ul>
+                <li>پروکاریوت‌ها را می‌توان بر اساس اندازه، ساختار سلولی و ترکیب مولکولی آنها از یوکاریوت‌ها متمایز کرد. بیشتر پروکاریوت‌ها فاقد سیستم‌های غشایی داخلی گسترده و پیچیده هستند.</li>
+                <li>اگرچه برخی ساختارهای سلولی در هر دو سلول یوکاریوتی و پروکاریوتی مشاهده می‌شوند، اما برخی از ساختارها منحصربه‌فرد پروکاریوت‌ها هستند.</li>
+                <li>پروکاریوت‌ها را می‌توان به دو گروه اصلی تقسیم کرد: <em>باکتری‌ها (Bacteria)</em> و <em>آرکی‌ها (Archaea)</em>. باکتری‌ها و آرکی‌ها با وجود شباهت در ساختار کلی، تفاوت‌های مهمی در دیواره‌های سلولی و غشاهای خود نشان می‌دهند.</li>
+                <li>بیشتر باکتری‌ها را می‌توان بر اساس ساختار دیواره سلولی به دو گروه بزرگ تقسیم کرد؛ تفاوت در ساختار دیواره سلولی با واکنش به فرآیند رنگ‌آمیزی گرم همبستگی دارد.</li>
+                <li>بسیاری از پروکاریوت‌ها متحرک هستند؛ چندین مکانیسم برای تحرک شناسایی شده است.</li>
+                <li>برخی از باکتری‌ها برای بقا در شرایط محیطی سخت در حالت خفته، آندوسپورهای مقاومی تشکیل می‌دهند.</li>
+            </ul>
+        </div>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Bacterial species flagellation pattern image]<br>
+                Bacterial species may differ in their patterns of flagella distribution. These Pseudomonas cells have a single polar flagellum used for locomotion.
+            </div>
+            <figcaption>گونه‌های باکتریایی ممکن است در الگوهای توزیع تاژک خود با یکدیگر تفاوت داشته باشند. این سلول‌های <em>Pseudomonas</em> دارای یک تاژک قطبی منفرد هستند که برای حرکت استفاده می‌شود.</figcaption>
+        </figure>
+
+        <p>حتی یک بررسی سطحی از جهان میکروبی نشان می‌دهد که پروکاریوت‌ها بر اساس هر معیاری یکی از مهم‌ترین گروه‌ها هستند: از نظر تعداد ارگانیسم‌ها، اهمیت عمومی زیست‌محیطی یا اهمیت عملی برای انسان‌ها. در واقع، بخش زیادی از درک ما از پدیده‌ها در بیوشیمی و زیست‌شناسی مولکولی ناشی از تحقیقات روی پروکاریوت‌ها است. اگرچه بخش قابل‌توجهی از این متن به میکروارگانیسم‌های یوکاریوتی اختصاص یافته است، اا تمرکز اصلی بر روی پروکاریوت‌ها است. بنابراین، بخش مربوط به ریخت‌شناسی میکروبی با ساختار پروکاریوت‌ها آغاز می‌شود. همانطور که در فصل ۱ اشاره شد، دو گروه کاملاً متفاوت از پروکاریوت‌ها وجود دارند: <em>باکتری‌ها (*Bacteria*)</em> و <em>آرکی‌ها (*Archaea*)</em>. اگرچه اطلاعات بسیار کمتری درباره ساختار سلولی و بیوشیمی آرکی‌ها در دست است، اما ویژگی‌های خاصی این دو قلمرو را متمایز می‌کند. در هر جا که ممکن باشد، به این تمایزها اشاره خواهد شد. بحث دقیق‌تر درباره <em>Archaea</em> در فصل ۲۰ ارائه شده است. یک توضیح درباره نام‌گذاری برای جلوگیری از سردرگمی ضروری است. واژه <em>پروکاریوت</em> در معنای عام برای شامل شدن هر دو گروه باکتری‌ها و آرکی‌ها استفاده خواهد شد؛ واژه باکتری به طور خاص به یکی از اعضای باکتری‌ها و واژه آرکیون به یکی از اعضای آرکی‌ها اشاره خواهد داشت. <span style="color: var(--accent-color);">[اعضای جهان میکروبی (بخش ۱.۱)]</span></p>
+
+        <h2 id="section-3-1">۳.۱ نمایی کلی از ساختار سلول پروکاریوتی</h2>
+        <p>از آنجا که بخش عمده‌ای از این فصل به بحث درباره تک‌تک اجزای سلولی اختصاص یافته است، ارائه یک نمای کلی مقدماتی از سلول پروکاریوتی به عنوان یک کل سودمند خواهد بود.</p>
+
+        <h3>شکل، آرایش و اندازه (Shape, Arrangement, and Size)</h3>
+        <p>شاید انتظار رود کارسازواره‌های (ارگانیسم‌های) کوچک و نسبتاً ساده‌ای مانند پروکاریوت‌ها از نظر شکل و اندازه یکنواخت باشند. اما چنین نیست، زیرا جهان میکروبی تنوع تقریباً نامحدودی را از نظر ریخت‌شناسی (مورفولوژی) ارائه می‌دهد (<strong>شکل‌های ۳.۱</strong> و <strong>۳.۲</strong>). با این حال، بیشتر پروکاریوت‌هایی که به طور معمول با آنها مواجه می‌شویم، یکی از دو شکل را دارند. <strong>کوکسی‌ها</strong> (مفرد: <strong>کوکوس</strong>) سلول‌هایی تقریباً کروی هستند. آنها می‌توانند به صورت تک‌سلولی وجود داشته باشند، اما با آرایش‌های مشخصی نیز همراه هستند که اغلب در شناسایی آنها مفید است. <strong>دیپلوکوکسی‌ها</strong> (مفرد: <strong>دیپلوکوکوس</strong>) زمانی به وجود می‌آیند که کوکسی‌ها تقسیم شده و در کنار هم باقی بمانند تا جفت‌هایی را تشکیل دهند. زنجیره‌های طویل کوکسی‌ها زمانی ایجاد می‌شوند که سلول‌ها پس از تقسیم‌های مکرر در یک صفحه به هم بچسبند؛ این الگو در سرده‌های <em>Streptococcus</em>، <em>Enterococcus</em> و <em>Lactococcus</em> دیده می‌شود (شکل ۳.۱ب). <em>Staphylococcus</em> در صفحات تصادفی تقسیم می‌شود تا خوشه‌های نامنظم شبیه به انگور ایجاد کند (شکل ۳.۱الف). تقسیم در دو یا سه صفحه...</p>
+
+        <p style="font-style: italic; text-align: center; color: var(--accent-color); margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
+            «دوران اینکه پژوهشگران به باکتری‌ها به عنوان کیسه‌های بسیار کوچکی از آنزیم‌ها نگاه می‌کردند، مدت‌هاست که گذشته است.»<br>
+            <span style="font-size: 0.85rem; color: var(--text-secondary);">— هاوارد جی. راجرز (Howard J. Rogers)</span>
+        </p>
+
+        <!-- PAGE 40 -->
+        <div class="page-marker">صفحه ۴۰</div>
+
+        <p>...می‌تواند خوشه‌های متقارنی از کوکسی‌ها تولید کند. اعضای سرده <em>Micrococcus</em> اغلب در دو صفحه تقسیم می‌شوند تا گروه‌های مربعی چهارسلولی به نام تتراد (tetrads) تشکیل دهند. در سرده <em>Sarcina</em>، کوکسی‌ها در سه صفحه تقسیم می‌شوند و بسته‌های مکعبی هشت‌سلولی تولید می‌کنند.</p>
+
+        <p>شکل رایج دیگر شکل <strong>میله‌ای</strong> است که گاهی <strong>باسیل</strong> (جمع: <strong>باسیل‌ها</strong>) نامید می‌شود. <em>Bacillus megaterium</em> نمونه بارزی از یک باکتری با شکل میله‌ای است (شکل ۳.۱ج). باسیل‌ها از نظر نسبت طول به عرض تفاوت قابل‌توجهی دارند، کوکوباسیل‌ها به قدری کوتاه و پهن هستند که شبیه کوکسی‌ها به نظر می‌رسند. شکل انتهای میله ترجیحاً بین گونه‌ها متفاوت است و ممکن است صاف، گرد، سیگارمانند یا دوشاخه باشد. اگرچه بسیاری از میله‌ها به صورت منفرد دیده می‌شوند، اما برخی پس از تقسیم در کنار هم باقی می‌مانند تا جفت‌ها یا زنجیره‌هایی را تشکیل دهند (به عنوان مثال، <em>Bacillus megaterium</em> در زنجیره‌های طولانی یافت می‌شود).</p>
+
+        <p>اگرچه پروکاریوت‌ها اغلب کره‌ها یا میله‌های ساده‌ای هستند، اما اشکال و آرایش‌های سلولی دیگر نیز غیرمعمول نیستند. <strong>ویبریوها</strong> بیشترین شباهت را به میله‌ها دارند، زیرا ویرگول‌مانند هستند (شکل ۳.۱ه). پروکاریوت‌های مارپیچی شکل را می‌توان به عنوان <strong>اسپیریلا</strong> طبقه‌بندی کرد که معمولاً دسته‌هایی از تاژک در یک یا هر دو انتهای سلول دارند (شکل ۳.۱د و شکل ۳.۲ج)، یا اسپیروکت‌ها. <strong>اسپیروکت‌ها</strong> انعطاف‌پذیرتر بوده و دارای آرایش تاژکی داخلی و منحصربه‌فردی هستند. اکتینومیست‌ها معمولاً رشته‌های بلندی به نام هیف تشکیل می‌دهند که ممکن است شاخه‌شاخه شده و شبکه‌ای به نام <strong>میسلیوم</strong> (شکل ۳.۲الف) ایجاد کنند. از این حیث، آنها شبیه به قارچ‌های رشته‌ای، گروهی از میکروب‌های یوکاریوتی، هستند.</p>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.1 Common Procaryotic Cell Shapes]<br>
+                (a) S. aureus cocci arranged in clusters; color-enhanced SEM; average cell diameter is about 1 μm.<br>
+                (b) Streptococcus agalactiae, the cause of Group B streptococcal infections; cocci arranged in chains; color-enhanced SEM (x4,800).<br>
+                (c) Bacillus megaterium, a rod-shaped bacterium arranged in chains, Gram stain (x600).<br>
+                (d) Rhodospirillum rubrum, phase contrast (x500).<br>
+                (e) Vibrio cholerae, curved rods with polar flagella; SEM.
+            </div>
+            <figcaption><strong>شکل ۳.۱ اشکال رایج سلول‌های پروکاریوتی.</strong> (الف) کوکسی‌های <em>Staphylococcus aureus</em> که در خوشه‌ها آرایش یافته‌اند؛ تصویر میکروسکوپ الکترونی نگاره با رنگ‌آمیزی مصنوعی؛ میانگین قطر سلول حدود ۱ میکرومتر است. (ب) <em>Streptococcus agalactiae</em>، عامل عفونت‌های استرپتوکوکی گروه B؛ کوکسی‌های آرایش‌یافته در زنجیره‌ها؛ تصویر میکروسکوپ الکترونی نگاره با رنگ‌آمیزی مصنوعی (با بزرگنمایی ۴۸۰۰ برابر). (ج) <em>Bacillus megaterium</em>، یک باکتری میله‌ای شکل آرایش‌یافته در زنجیره‌ها، رنگ‌آمیزی گرم (با بزرگنمایی ۶۰۰ برابر). (د) <em>Rhodospirillum rubrum</em>، میکروسکوپ فاز کنتراست (با بزرگنمایی ۵۰۰ برابر). (ه) <em>Vibrio cholerae</em>، میله‌های منحنی با تاژک‌های قطبی؛ تصویر میکروسکوپ الکترونی نگاره.</figcaption>
+        </figure>
+
+        <!-- PAGE 41 -->
+        <div class="page-marker">صفحه ۴۱</div>
+
+        <p>میکروارگانیسم تخم‌مرغی تا گلابی‌شکل <em>Hyphomicrobium</em> (شکل ۳.۲د) جوانه‌ای در انتهای یک هیف بلند تولید می‌کند. باکتری‌های دیگری مانند <em>Gallionella</em> ساقه‌های غیرزنده تولید می‌کنند (شکل ۳.۲و). تعداد کمی از پروکاریوت‌ها در واقع پهن هستند. به عنوان مثال، آنتونی والسبی آرکی‌های مربعی را در برکه‌های نمکی کشف کرده است (شکل ۳.۲ه). آنها مانند جعبه‌های تخت، مربع تا مستطیل‌شکل با ابعاد حدود ۲ میکرومتر در ۲ تا ۴ میکرومتر و تنها با ضخامت ۰.۲۵ میکرومتر هستند. سرانجام، برخی از پروکاریوت‌ها در شکل خود متغیر بوده و فاقد یک فرم مشخص و واحد هستند (شکل ۳.۲ب). به این‌ها <strong>پلئومورفیک</strong> (چندشکلی) می‌گویند، هرچند ممکن است مانند <em>Corynebacterium</em> دارای یک شکل کلی میله‌مانند باشند. <span style="color: var(--accent-color);">[شاخه اسپیروکت‌ها (بخش ۲۱.۶)]</span></p>
+
+        <p>باکتری‌ها از نظر اندازه به اندازه شکلشان متفاوت هستند (<strong>شکل ۳.۳</strong>). <em>Escherichia coli</em> میله‌ای با اندازه تقریباً متوسط است، با عرض ۱.۱ تا ۱.۵ میکرومتر و طول ۲.۰ تا ۶.۰ میکرومتر. در نزدیکی انتهای کوچک پیوستارِ اندازه، اعضای سرده <em>Mycoplasma</em> قرار دارند؛ گروه جالب‌توجهی از باکتری‌ها که فاقد دیواره سلولی هستند. برای سال‌های متمادی، تصور می‌شد که آنها کوچک‌ترین پروکاریوت‌ها با قطر حدود ۰.۳ میکرومتر هستند که تقریباً هم‌اندازه با ویروس‌های آبله (پاکس‌ویروس‌ها) است. با این حال، پروکاریوت‌های حتی کوچک‌تری نیز کشف شده‌اند. نانوباکتری‌ها قطری بین ۰.۲ میکرومتر تا کمتر از ۰.۰۵ میکرومتر دارند. تنها چند سویه از آنها کشت داده شده‌اند و به نظر می‌رسد این‌ها ارگانیسم‌های بسیار کوچک و باکتری‌مانند باشند. کشف نانوباکتری‌ها شگفت‌آور است زیرا محاسبات نظری پیش‌بینی می‌کردند که کوچک‌ترین سلول‌ها قطری حدود ۰.۱۴ تا ۰.۲ میکرومتر دارند. در انتهای دیگر این پیوستار، باکتری‌هایی مانند اسپیروکت‌ها قرار دارند که طول آنها می‌تواند به ۵۰۰ میکرومتر برسد، و باکتری فتوسنتزی <em>Oscillatoria</em> که قطر آن حدود ۷ میکرومتر است (هم‌قطر با یک گلبول قرمز خون). یک باکتری عظیم در روده جراح‌ماهی قهوه‌ای زندگی می‌کند...</p>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.2 Unusually Shaped Procaryotes]<br>
+                Examples of procaryotes with shapes quite different from bacillus and coccus types.<br>
+                (a) Actinomyces, SEM (x21,000).<br>
+                (b) Mycoplasma pneumoniae, SEM (x62,000).<br>
+                (c) Spiroplasma, SEM (x13,000).<br>
+                (d) Hyphomicrobium with hyphae and bud, electron micrograph with negative staining.<br>
+                (e) Walsby's square archaeon.<br>
+                (f) Gallionella ferruginea with stalk.
+            </div>
+            <figcaption><strong>شکل ۳.۲ پروکاریوت‌های با اشکال غیرمعمول.</strong> نمونه‌هایی از پروکاریوت‌ها با اشکالی کاملاً متفاوت از انواع باسیل و کوکوس. (الف) <em>Actinomyces</em>، میکروسکوپ الکترونی نگاره روبشی (بزرگنمایی ۲۱۰۰۰ برابر). (ب) <em>Mycoplasma pneumoniae</em>، میکروسکوپ الکترونی نگاره روبشی (بزرگنمایی ۶۲۰۰۰ برابر). (ج) <em>Spiroplasma</em>، میکروسکوپ الکترونی نگاره روبشی (بزرگنمایی ۱۳۰۰۰ برابر). (د) <em>Hyphomicrobium</em> با هیف‌ها و جوانه، تصویر میکروسکوپ الکترونی با رنگ‌آمیزی منفی. (ه) آرکیوم مربعی والسبی. (و) <em>Gallionella ferruginea</em> با ساقه.</figcaption>
+        </figure>
+
+        <!-- PAGE 42 -->
+        <div class="page-marker">صفحه ۴۲</div>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.3 Sizes of Procaryotes and Viruses]<br>
+                The sizes of selected bacteria relative to a red blood cell and viruses.<br>
+                - Oscillatoria: 7,000 nm<br>
+                - Red blood cell: 7,000 nm<br>
+                - E. coli: 1,300 x 4,000 nm<br>
+                - Streptococcus: 800 - 1,000 nm<br>
+                - Poxvirus: 230 x 320 nm<br>
+                - Influenza virus: 85 nm<br>
+                - T2 E. coli bacteriophage: 65 x 95 nm<br>
+                - Tobacco mosaic virus: 15 x 300 nm<br>
+                - Poliomyelitis virus: 27 nm
+            </div>
+            <figcaption><strong>شکل ۳.۳ ابعاد پروکاریوت‌ها و ویروس‌ها.</strong> ابعاد باکتری‌های منتخب در مقایسه با یک گلبول قرمز خون و ویروس‌ها (ابعاد به نانومتر).</figcaption>
+        </figure>
+
+        <p>...جراح‌ماهی قهوه‌ای، <em>Acanthurus nigrofuscus</em>، زندگی می‌کند. <em>Epulopiscium fishelsoni</em> با ابعادی به بزرگی ۶۰۰ در ۸۰ میکرومتر رشد می‌کند که کمی کوچک‌تر از یک خط‌تیره چاپی است. اخیراً باکتری حتی بزرگ‌تری به نام <em>Thiomargarita namibiensis</em> در رسوبات اقیانوسی کشف شده است (<strong>تنوع میکروبی و اکولوژی ۳.۱</strong>). بنابراین، تعداد کمی از باکتری‌ها بسیار بزرگ‌تر از سلول یوکاریوتی متوسط هستند (سلول‌های گیاهی و جانوری معمولی حدود ۱۰ تا ۵۰ میکرومتر قطر دارند).</p>
+
+        <h3>سازمان‌دهی سلول پروکاریوتی (Procaryotic Cell Organization)</h3>
+        <p>سلول‌های پروکاریوتی از نظر ریخت‌شناسی ساده‌تر از سلول‌های یوکاریوتی هستند، اما آنها صرفاً نسخه‌های ساده‌شده‌ای از یوکاریوت‌ها نیستند. اگرچه بسیاری از ساختارها در هر دو نوع سلول مشترک هستند، اما برخی منحصربه‌فرد پروکاریوت‌ها هستند. ساختارهای اصلی پروکاریوتی و عملکردهای آنها به ترتیب در <strong>جدول ۳.۱</strong> و <strong>شکل ۳.۴</strong> خلاصه و به تصویر کشیده شده‌اند. توجه داشته باشید که هیچ پروکاریوت واحدی در تمام اوقات واجد تمامی این ساختارها نیست. برخی تنها در سلول‌های خاص، در شرایط خاص یا در فازهای خاصی از چرخه زندگی یافت می‌شوند. با این حال، علیرغم این تفاوت‌ها، پروکاریوت‌ها در ساختار بنیادی و مهم‌ترین اجزای خود ثابت و همگن هستند.</p>
+
+        <p>سلول‌های پروکاریوتی تقریباً همیشه توسط یک دیواره سلولی از نظر شیمیایی پیچیده محدود می‌شوند. در بخش داخلی این دیواره، غشای پلاسمایی قرار دارد. این غشا می‌تواند دچار فرورفتگی (invagination) شود تا ساختارهای غشایی داخلی ساده‌ای ایجاد کند، مانند غشای برداشت‌کننده نور در برخی باکتری‌های فتوسنتزی. از آنجا که سلول پروکاریوتی حاوی اندامک‌های درون‌غشایی نیست، درون آن از نظر ریخت‌شناسی ساده به نظر می‌رسد. ماده ژنتیکی در یک ناحیه مجزا به نام نوکلئوئید متمرکز شده است و معمولاً از سیتوپلاسمِ احاطه‌کننده توسط غشاها جدا نمی‌شود. ریبوزوم‌ها و توده‌های بزرگ‌تری به نام اجسام گنجالی (انکلوزیون بادی) در سراسر ماتریکس سیتوپلاسمی پراکنده هستند. بسیاری از پروکاریوت‌ها از تاژک برای حرکت استفاده می‌کنند. علاوه بر این، many از آنها توسط یک کپسول یا لایه مخاطی در خارج از دیواره سلولی احاطه شده‌اند.</p>
+
+        <p>در بخش‌های باقی‌مانده این فصل، ساختارهای اصلی پروکاریوتی را با جزئیات بیشتر شرح می‌دهیم. با غشای پلاسمایی آغاز می‌کنیم، ساختاری که تمام سلول‌ها را تعریف می‌کند. سپس به سمت داخل پیش می‌رویم تا ساختارهای واقع در سیتوپلاسم را بررسی کنیم. سپس بحث به سمت بیرون حرکت می‌کند، ابتدا به دیواره سلولی و سپس به ساختارهای خارج از دیواره سلولی می‌پردازد. در نهایت، ساختاری را بررسی می‌کنیم که منحصربه‌فرد باکتری‌هاست؛ یعنی آندوسپور باکتریایی.</p>
+
+        <div class="review-box">
+            <h3>سوالات بخش ۳.۱</h3>
+            <ol>
+                <li>باکتری‌ها چه اشکال مشخصی می‌توانند به خود بگیرند؟ الگوهای گوناگون تجمع سلول‌های باکتریایی در کنار یکدیگر را شرح دهید.</li>
+                <li>یک سلول باکتریایی ایده‌آل رسم کرده و تمامی ساختارهای مهم آن را برچسب‌گذاری (مشخص) نمایید.</li>
+            </ol>
+        </div>
+
+        <h2 id="section-3-2">۳.۲ غشاهای سلول پروکاریوتی</h2>
+        <p>غشاها یک نیاز مطلق برای تمامی کارسازواره‌های زنده هستند. سلول‌ها باید به روشی انتخابگر با محیط خود تعامل داشته باشند، خواه این محیط، محیط داخلی یک ارگانیسم پرسلولی باشد یا یک محیط خارجی کمتر محافظت‌شده و متغیرتر. سلول‌ها نه تنها باید قادر به کسب مواد مغذی و دفع ضایعات باشند، بلکه باید بخش داخلی خود را در مواجهه با تغییرات خارجی در وضعیتی ثابت و بسیار سازمان‌یافته حفظ کنند.</p>
+
+        <p><strong>غشای پلاسمایی</strong> سیتوپلاسم هر دو سلول پروکاریوتی و یوکاریوتی را در بر می‌گیرد. این غشا نقطه اصلی تماس با محیط سلول است و بنابراین مسئول بخش زیادی از رابطه آن با جهان خارج است. غشاهای پلاسمایی سلول‌های پروکاریوتی به ویژه مهم هستند زیرا باید نقش‌های فوق‌العاده متنوعی را ایفا کنند. غشای پلاسمایی علاوه بر حفظ سیتوپلاسم، به عنوان یک سد با نفوذپذیری انتخابی نیز عمل می‌کند؛ این غشا به یون‌ها و مولکول‌های خاصی اجازه عبور (به داخل یا خارج از سلول) را می‌دهد، در حالی که مانع از حرکت برخی دیگر می‌شود. بنابراین غشا از عبور و هدررفت اجزای ضروری از طریق نشت ممانعت به عمل می‌آورد در حالی که به حرکت سایر مولکول‌ها اجازه می‌دهد. از آنجا که بسیاری از مواد بدون کمک نمی‌توانند از غشای پلاسمایی عبور کنند، غشا در صورت نیاز به این حرکت کمک می‌کند. سیستم‌های انتقالی برای کارهایی نظیر جذب مواد مغذی، دفع ضایعات و ترشح پروتئین استفاده می‌شوند. غشای پلاسمایی پروکاریوتی همچنین محل انجام انواع فرآیندهای متابولیکی حیاتی است: تنفس، فتوسنتز و سنتز لیپیدها و اجزای دیواره سلولی. در نهایت، غشا حاوی مولکول‌های گیرنده خاصی است که به پروکاریوت‌ها در شناسایی و پاسخ به مواد شیمیایی موجود در محیط اطراف خود کمک می‌کنند. به وضوح غشای پلاسمایی برای بقای میکروارگانیسم‌ها ضروری است. <span style="color: var(--accent-color);">[جذب مواد مغذی توسط سلول (بخش ۵.۶)]</span></p>
+
+        <p>همانطور که در بحث‌های بعدی مشخص خواهد شد، ظاهراً تمامی غشاها دارای یک طرح پایه‌ای و مشترک هستند. با این حال، غشاهای پروکاریوتی می‌توانند از نظر لیپیدهایی که در خود دارند، به طور چشمگیری متفاوت باشند. در واقع، شیمی غشا می‌تواند برای شناسایی گونه‌های باکتریایی خاص استفاده شود. برای درک این تفاوت‌های شیمیایی و درک عملکردهای متعدد غشا...</p>
+
+        <!-- PAGE 43 -->
+        <div class="page-marker">صفحه ۴۳</div>
+
+        <div class="review-box" style="border-color: #4caf50; background-color: rgba(76, 175, 80, 0.05); margin-top: 25px; margin-bottom: 25px;">
+            <h3 style="color: #4caf50; border-bottom: 2px solid #4caf50; padding-bottom: 5px;">تنوع میکروبی و اکولوژی ۳.۱</h3>
+            <h4 style="margin: 10px 0 5px 0; font-weight: bold; color: var(--text-primary);">میکروب‌های غول‌پیکر (Monstrous Microbes)</h4>
+            <p>زیست‌شناسان اغلب پروکاریوت‌ها و یوکاریوت‌ها را تا حدودی بر اساس اندازه سلول از هم متمایز کرده‌اند. به طور کلی، فرض بر این است که سلول‌های پروکاریوتی کوچک‌تر از سلول‌های یوکاریوتی هستند. پروکاریوت‌ها در مقایسه با بیشتر یوکاریوت‌ها فوق‌العاده سریع رشد می‌کنند و فاقد سیستم‌های انتقال وزیکولی پیچیده سلول‌های یوکاریوتی (توصیف‌شده در فصل ۴) هستند. این فرض وجود داشته است که آن‌ها به دلیل کندی نفوذ (دیفیوژن) مواد مغذی و نیاز به نسبت سطح به حجم بزرگ، باید کوچک باشند. بنابراین، هنگامی که فیشلسون، مونتگومری و میربرگ یک میکروارگانیسم بزرگ و سیگارمانند را در مجرای گوارشی جراح‌ماهی قهوه‌ای دریای سرخ، <em>Acanthurus nigrofuscus</em> کشف کردند، در مقاله خود در سال ۱۹۸۵ پیشنهاد کردند که این ارگانیسم یک آغازی (پروتیست) است. به نظر می‌رسید برای اینکه چیز دیگری باشد بیش از حد بزرگ است. در سال ۱۹۹۳، استر آنگرت، کندال کلمنس و نورمن پیس از مقایسه‌های توالی rRNA برای شناسایی این میکروارگانیسم، که اکنون <em>Epulopiscium fishelsoni</em> نامیده می‌شود، به عنوان یک پروکاریوت مرتبط با سرده باکتریایی گرم‌مثبت <em>Clostridium</em> استفاده کردند.</p>
+
+            <p><em>E. fishelsoni</em> [برگرفته از واژه‌های لاتین epulum به معنای مهمانی یا ضیافت، و piscium به معنای ماهی] می‌تواند به اندازه‌ای معادل ۸۰ میکرومتر در ۶۰۰ میکرومتر برسد و به طور معمول طول آن بین ۲۰۰ تا ۵۰۰ میکرومتر است (<strong>به شکل کادر زیر مراجعه کنید</strong>). حجم آن حدود یک میلیون بار بزرگ‌تر از <em>Escherichia coli</em> است. با وجود اندازه عظیم، این ارگانیسم دارای ساختار سلولی پروکاریوتی است. این ارگانیسم متحرک است و با استفاده از تاژک‌هایی که سطح آن را پوشانده‌اند با سرعتی حدود دو برابر طول بدن خود در ثانیه (تقریباً ۲.۴ سانتی‌متر در دقیقه) شنا می‌کند. سیتوپلاسم حاوی نوکلئوئیدهای بزرگ و بسیاری ریبوزوم است، همانطور که برای چنین سلول بزرگی مورد نیاز خواهد بود. به نظر می‌رسد <em>Epulopiscium</em> با داشتن یک غشای پلاسمایی به شدت چین‌خورده، بر محدودیت‌های اندازه ناشی از نفوذ (دیفیوژن) غلبه می‌کند. این امر باعث افزایش سطح سلول شده و به انتقال مواد مغذی کمک می‌کند.</p>
+
+            <p>به نظر می‌رسد که <em>Epulopiscium</em> از طریق آلودگی مدفوعی غذای ماهی بین میزبان‌ها منتقل می‌شود. این باکتری را می‌توان با گرسنه نگه داشتن جراح‌ماهی به مدت چند روز از بین برد. اگر ماهی‌های جوان فاقد باکتری با میزبان‌های آلوده قرار داده شوند، دوباره به آن مبتلا می‌شوند. جالب اینجاست که این واکنش در جراح‌ماهی‌های بالغ و غیرآلوده رخ نمی‌دهد.</p>
+
+            <p>در سال ۱۹۹۷، هایدی شولز پروکاریوت حتی بزرگ‌تری را در رسوبات اقیانوسی سواحل نامیبیا کشف کرد. <em>Thiomargarita namibiensis</em> یک باکتری کروی با قطر بین ۱۰۰ تا ۷۵۰ میکرومتر است که اغلب زنجیره‌هایی از سلول‌های محصور در غلاف‌های مخاطی تشکیل می‌دهد. حجم آن بیش از ۱۰۰ برابر بزرگ‌تر از <em>E. fishelsoni</em> است. یک واکوئل حدود ۹۸ درصد سلول را اشغال کرده و حاوی مایعی غنی از نیترات است؛ این واکوئل توسط یک لایه سیتوپلاسمی به ضخامت ۰.۵ تا ۲.۰ میکرومتر پر از دانه‌های گوگرد احاطه شده است. ضخامت لایه سیتوپلاسمی مشابه بیشتر باکتری‌ها است و برای نرخ‌های نفوذ کافی به اندازه کافی نازک است. این باکتری از گوگرد به عنوان منبع انرژی و از نیترات به عنوان پذیرنده الکترون برای الکترون‌های آزادشده در فرآیندهای ذخیره انرژی هنگام اکسیدشدن گوگرد استفاده می‌کند.</p>
+
+            <p>کشف این پروکاریوت‌ها تمایز بین پروکاریوت‌ها و یوکاریوت‌ها بر اساس اندازه سلول را به شدت تضعیف می‌کند. آنها مطمئناً بزرگ‌تر از یک سلول یوکاریوتی معمولی هستند. تمایز اندازه بین پروکاریوت‌ها و یوکاریوت‌ها با کشف سلول‌های یوکاریوتی که کوچک‌تر از حد تصور قبلی بودند نیز بیشتر متزلزل شده است. بهترین نمونه <em>Nanochlorum eukaryotum</em> است. <em>Nanochlorum</em> تنها حدود ۱ تا ۲ میکرومتر قطر دارد، با این حال واقعاً یوکاریوتی است و دارای هسته، کلروپلاست و میتوکندری می‌باشد. درک ما از عوامل محدودکننده اندازه سلول‌های پروکاریوتی باید مورد ارزیابی مجدد قرار گیرد. دیگر فرضیه‌ای امن نیست که فرض کنیم سلول‌های بزرگ یوکاریوتی و سلول‌های کوچک پروکاریوتی هستند.</p>
+
+            <figure style="background-color: var(--code-bg); margin-bottom: 0; padding: 15px;">
+                <div class="figure-placeholder">
+                    [Box Figures: Giant Bacteria]<br>
+                    (a) Epulopiscium fishelsoni dwarfing paramecia at the bottom (x200).<br>
+                    (b) A chain of Thiomargarita namibiensis cells as viewed with the light microscope. Note the external mucous sheath and the internal sulfur globules.
+                </div>
+                <figcaption style="color: var(--text-primary); border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 10px;"><strong>باکتری‌های غول‌پیکر.</strong> (الف) این عکس با تکنیک شبه‌زمینه تاریک گرفته شده و <em>Epulopiscium fishelsoni</em> را نشان می‌دهد که پارامسی‌های پایین کادر را بسیار کوچک جلوه داده است (بزرگنمایی ۲۰۰ برابر). (ب) زنجیره‌ای از سلول‌های <em>Thiomargarita namibiensis</em> با میکروسکوپ نوری. به غلاف مخاطی بیرونی و گرانول‌های گوگرد درونی توجه کنید.</figcaption>
+            </figure>
+            <div style="font-size: 0.75rem; color: var(--text-secondary); text-align: left; direction: ltr; margin-top: 10px;">
+                Sources: Angert, E. R., Clemens, K. D., and Pace, N. R. 1993. The largest bacterium. Nature 362:239-41; and Shulz, H. N., Brinkhoff, T., Ferdelman, T. G., Marine, M. H., Teske, A., and Jorgensen, B.B. 1999. Dense populations of a giant sulfur bacterium in Namibian shelf sediments. Science 284:493-95.
+            </div>
+        </div>
+
+        <!-- PAGE 44 -->
+        <div class="page-marker">صفحه ۴۴</div>
+
+        <h3 style="margin-top: 25px;">جدول ۳.۱: عملکرد ساختارهای پروکاریوتی</h3>
+        <div style="overflow-x: auto; margin-bottom: 25px;">
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid var(--border-color); font-size: 0.9rem; text-align: right;">
+                <thead>
+                    <tr style="background-color: var(--surface-color); border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 10px; border: 1px solid var(--border-color);">ساختار / اندامک</th>
+                        <th style="padding: 10px; border: 1px solid var(--border-color);">عملکرد اصلی</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">غشای پلاسمایی (Plasma membrane)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">سد نفوذپذیری انتخابی، مرز مکانیکی سلول، انتقال مواد مغذی و پسماندها، محل تمرکز فرآیندهای متابولیک حیاتی (مانند تنفس سلولی و فتوسنتز)، ردیابی سیگنال‌های فیزیکی و شیمیایی محیطی جهت شیمی‌گرایی (شیمی‌تاکتیک).</td>
+                    </tr>
+                    <tr style="background-color: rgba(255,255,255,0.02);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">واکوئل گازی (Gas vacuole)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">ایجاد نیروی شناوری (ارتقا و بقای معلق بودن سلول) در محیط‌های آبی مستقل.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">ریبوزوم‌ها (Ribosomes)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">سنتز و ساخت انواع زنجیره‌های پروتئینی.</td>
+                    </tr>
+                    <tr style="background-color: rgba(255,255,255,0.02);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">اجسام گنجالی (Inclusion bodies)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">ذخیره‌سازی درون‌یاخته‌ای کربن، فسفات، نشاسته و سایر سوخت‌ها و مواد ترجیحی.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">نوکلئوئید (Nucleoid)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">محل استقرار و آرایش مولکول‌های ژنتیکی مادر (DNA).</td>
+                    </tr>
+                    <tr style="background-color: rgba(255,255,255,0.02);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">فضای پری‌پلاسمی (Periplasmic space)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">در باکتری‌ها حاوی آنزیم‌های هیدرولیتیک فعال و پروتئین‌های انتقالی برای پردازش و جذب مواد مغذی است.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">دیواره سلولی (Cell wall)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">حفظ شکل فیزیکی، استحکام کالبد سلولی و دفع کامل خطرات فشارهای شدید ناشی از لیز اسمزی.</td>
+                    </tr>
+                    <tr style="background-color: rgba(255,255,255,0.02);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">کپسول‌ها و لایه‌های مخاطی</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">ایجاد حصار دفاعی دفاع در برابر فاگوسیتوز (تبلور ایمنی میزبان) و امکان چسبیدن بهتر به سطوح صلب گوناگون.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">فیمبریا و پیلی (Fimbriae / Pili)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">کمک به اتصالات محکم سطحی و بسترسازی الحاق دوره‌ای ژنی باکتریایی (هم‌یوغی).</td>
+                    </tr>
+                    <tr style="background-color: rgba(255,255,255,0.02);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">تاژک (Flagella)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">تأمین کامل پیشرانش و ایجاد قابلیت جابجایی فعال سلولی (تحرک).</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">آندوسپور (Endospore)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">حفظ کامل حیات تحت بدترین شرایط تخریبی و زیستی جانکاه محیطی به صورت خفته.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.4 Morphology of a Procaryotic Cell Diagram]<br>
+                Labels pointing to parts:<br>
+                - Capsule (outer pink layer)<br>
+                - Cell wall (brown)<br>
+                - Plasma membrane (yellow)<br>
+                - Ribosomes (small dots)<br>
+                - Inclusion body (green spheres)<br>
+                - Nucleoid / Chromosome DNA (blue tangles)<br>
+                - Fimbriae (fine hairs around)<br>
+                - S-layer (geometric sheet pattern)<br>
+                - Flagellum (long tail)
+            </div>
+            <figcaption><strong>شکل ۳.۴ ریخت‌شناسی ساختار سلول پروکاریوتی.</strong> نمایش نمادین از یک یاخته و ساختارهای عمومی همراه با برچسب‌های مرجع.</figcaption>
+        </figure>
+
+        <p>برای آشنایی بیشتر با غشاهای سلولی، شناخت ساختار پایه غشا ضروری است. در این بخش، الگو و مدل عمومی ساختار تمامی غشاهای زیستی شرح داده می‌شود. سپس تفاوت‌های کلیدی و بسیار بنیادین میان کالبد غشاهای باکتریایی و غشاهای آرکیایی را بررسی می‌نماییم.</p>
+
+        <h3>مدل موزائیک سیال از ساختار غشا (The Fluid Mosaic Model of Membrane Structure)</h3>
+        <p>مقبول‌ترین و قوی‌ترین ایده توصیفی برای نمایش کالبدی کپسول‌های سلول، <strong>مدل موزائیک سیال</strong> ارائه شده توسط سینگر و نیکلسون (Singer & Nicholson) است (<strong>شکل ۳.۵</strong>). این دیدگاه چنین بازگو می‌کند که غشاهای حیاتی اساساً به شکل ورقه یا لایه‌های دولایه‌ای از مولکول‌های چربی (لیپیدها) سازمان یافته‌اند که توده‌ها و رشته‌های پروتئینی در میان آنها شناورند. این مدل بر اساس مطالعات روی غشاهای یوکاریوتی و باکتریایی بنا شده است و...</p>
+
+        <!-- PAGE 45 -->
+        <div class="page-marker">صفحه ۴۵</div>
+
+        <figure style="padding: 15px;">
+            <div class="figure-placeholder">
+                [Figure 3.5 Bacterial Plasma Membrane Structure]<br>
+                Diagram of fluid mosaic model of bacterial membrane showing:<br>
+                - Integral proteins (blue) floating in a lipid bilayer.<br>
+                - Peripheral proteins (purple) associated loosely with the inner membrane surface.<br>
+                - Hydrophilic ends of phospholipids (small spheres) and hydrophobic fatty acid chains (wiggly tails).<br>
+                - Other membrane lipids such as hopanoids (red) may be present.
+            </div>
+            <figcaption><strong>شکل ۳.۵ ساختار غشای پلاسمایی باکتریایی.</strong> این نمودار از مدل موزائیک سیال غشای باکتری را نشان می‌دهد که پروتئین‌های درونی (ترانس‌ممبران یا انتگرال - به رنگ آبی) در دولایه لیپیدی شناورند. پروتئین‌های محیطی (پریفرال - به رنگ بنفش) به طور سست با سطح داخلی غشا همراه هستند. کره‌های طوسی‌رنگ سرهای آب‌دوست فسفولیپیدها و دم‌های زنجیره‌ای زرد تداعی‌گر اسیدهای چرب آب‌گریز هستند. سایر ترکیبات چربی غشا مانند هوپانوئیدها (به رنگ قرمز) جهت حفظ بقا و پایداری قرار دارند.</figcaption>
+        </figure>
+
+        <p>...رشته‌های پروتئینی در میان آنها غوطه‌ورند. این مدل مبتنی بر آزمایش‌های متنوع روی دیواره‌های یوکاریوتی و باکتریایی استوار است. در این فرآیند، روش‌های متنوع میکروسکوپی اطلاعات فوق‌العاده باارزشی ارائه کردند. مطالعات میکروسکوپ الکترونی عبوری (TEM) نقشی اساسی را ایفا نمودند. هنگامی که غشاها با رنگ‌آمیزی شیمیایی آماده و تحت نظارت TEM دیده می‌شوند، سلول به غشایی بسیار نازک و ظریف به قطر حدود ۵ تا ۱۰ نانومتر روبرو می‌گردد که تصویر دو خط بسیار تیره موازی را در دو طرف بخش رنگ‌آمیزی نشده وسط بازگو می‌کند. این کالبد یکنواخت چنین برآورد شد که اسکلت چربی غشا به صورت دو لایه از مولکول‌ها که انتهای طولی آنها روبروی هم فشرده شده، چیده شده است (شکل ۳.۵). هنگامی که پوسته بیرونی غشاها با ترفند فریز-اچینگ (سرماتراشی) برش داده می‌شود، آنها می‌توانند از مرکز دولایه چربی شکافته و از هم باز شوند تا دنیای پیچیده گویچه‌های درونی را افشا سازند. در میان این فضای دولایه چربی، ذرات کروی متورمی نمایان است؛ تبیین زیست‌شناسان از این گنجینه‌ها تداعی‌گر پروتئین‌هایی است که در پیکره لایه چربی لنگر انداخته‌اند. بهره‌گیری از میکروسکوپ نیروی اتمی شواهد و مصادیق بصری ارزشمندی برای توجیه این موضوع تدارک دیده است. <span style="color: var(--accent-color);">[میکروسکوپ الکترونی (بخش ۲.۴)؛ تکنیک‌های نوین در میکروسکوپ: میکروسکوپ پروب روبشی (بخش ۲.۵)]</span></p>
+
+        <p>ویژگی شیمیایی لیپیدهای غشایی برای توانایی و قوام کالبدی آنها در قالب‌گیری دولایه به شدت حیاتی است. غالب چربی‌های فعال غشا دارای مولکول‌هایی نامتقارن با انتهاهای قطبی و غیرقطبی هستند (<strong>شکل ۳.۶</strong>)؛ این مولکول‌ها اصطلاحاً <strong>آمفی‌پاتیک</strong> (دوگانه‌دوست) خوانده می‌شوند. انتهای قطبی با مولکول‌های آب تعامل هموار برقرار کرده و <strong>آب‌دوست</strong> است؛ انتهای غیرقطبیِ <strong>آب‌گریز</strong> در آب کاملاً نامحلول بوده و همواره تمایل دارد با زنجیره‌های مشابه مجاور پیوند تدافعی تشکیل دهد. در محیط‌های زنده آبی، لیپیدهای آمفی‌پاتیک برای تشکیل یک کالبد دولایه با یکدیگر همراه می‌گردند. پوسته بیرونی دولایه غشا آب‌دوست بوده و انتهای آب‌گریز در درون ماتریکس غشا و به دور از آب جاری اطراف مستور می‌ماند (شکل ۳.۵). <span style="color: var(--accent-color);">[لیپیدها (پیوست I)]</span></p>
+
+        <p>دو دسته پروتئین غشایی مجزا بر حسب کیفیت سست بودن یا میزان درگیری مغز فیزیکی آنها در بافت ترشحی شناسایی شده است:</p>
+        <ul>
+            <li><strong>پروتئین‌های محیطی (Peripheral proteins):</strong> به طور سست به غشاهای زیستی متصل شده و به آسانی قابل تفکیک هستند (شکل ۳.۵). آنها در محلول‌های مرطوب آبی حلال‌پذیری نشان می‌دهند و حدود ۲۰ الی ۳۰ درصد از کل توده‌های فعال غشایی را می‌سازند.</li>
+            <li><strong>پروتئین‌های درونی / انتگرال (Integral proteins):</strong> حدود ۷۰ الی ۸۰ درصد کل حجم پروتئینی غشا را به خود اختصاص داده‌اند. این پروتئین‌ها به سختی از ماتریکس چربی متلاشی و استخراج می‌شوند و بازیافت آنها بدون تخریب بافت چربی در آب ناپاک و ناممکن است. پروتئین‌های درونی درست نظیر لیپیدهای مادری، غشاهای آمفی‌پاتیک هستند؛ بخش غیرقطبی و آب‌گریز آنها در مغاله لایه‌های چربی پنهان گشته، در حالی که توده آب‌دوست آنها از پوسته بیرونی غشاها به بیرون امتداد یافته است (شکل ۳.۵). آنها حتی قادرند به طور جانبی در صفحه غشا حرکت (دیفیوژن) کنند اما چرخش عرضی کله‌به‌پا (flip-flop) یا واژگونی را ندارند.</li>
+        </ul>
+
+        <figure style="padding: 15px;">
+            <div class="figure-placeholder">
+                [Figure 3.6 The Structure of a Polar Membrane Lipid]<br>
+                Phosphatidylethanolamine, an amphipathic phospholipid often found in bacterial membranes.<br>
+                - Polar and hydrophilic end: Ethanolamine (NH3-CH2-CH2) linked to Phosphate (O-P(=O)(O-)-O).<br>
+                - Nonpolar and hydrophobic end: Glycerol linked to long fatty acid chains (R groups).
+            </div>
+            <figcaption><strong>شکل ۳.۶ ساختار یک لیپید غشایی قطبی.</strong> فسفاتیدیل اتانول‌آمین، یک فسفولیپید آمفی‌پاتیک که فراوانی چمشگیری در دیواره و غشای باکتریایی دارد. گروه‌های R تداعی‌گر اسیدهای چرب طویل و غیرقطبی هستند.</figcaption>
+        </figure>
+
+        <!-- PAGE 46 -->
+        <div class="page-marker">صفحه ۴۶</div>
+
+        <p>کربوهیدرات‌ها نیز به وفور به سطح خارجی پروتئین‌های غشای پلاسمایی باکتریایی متصل می‌شوند و وظابف حیاتی تعاملی و سیگنالی بر عهده دارند. <span style="color: var(--accent-color);">[پروتئین‌ها (پیوست I)]</span></p>
+
+        <h3>غشاهای باکتریایی (Bacterial Membranes)</h3>
+        <p>پوسته‌های سلول باکتریایی از این حیث مشابهت عمیق با سلول‌های یوکاریوتی دارند که اکثر چربی‌های آمفی‌پاتیک مادری آنها گویای فسفولیپیدها است (شکل ۳.۶)؛ اما غشاهای باکتریایی تمایز بسیار کلیدی با یوکاریوت‌ها دارند و آن فقدان استرول‌های کلاسیک (مانند کلسترول غنی یوکاریوتی) است (<strong>شکل ۳.۷الف</strong>). در عوض، ترکیبات هم‌ارزی به نام <strong>هوپانوئیدها (Hopanoids)</strong> وجود دارند که از پیش‌سازهای یکسانی با استروئیدها استخراج می‌شوند و درست شبیه استرول‌ها، مأموریت غایی پایدارسازی کالبدی غشای باکتری را مدیریت می‌نمایند. هوپانوئیدها برای زمین‌شناسان و بوم‌شناسان عمیقاً هیجان‌انگیز هستند: تخمین زده شده که توده کلی هوپانوئیدها در رسوبات کره زمین بالغ بر $10^{11}$ تا $10^{12}$ تن است—که تقریباً هم‌ارز با حجم کل کربن آلی کل جانداران حیات این سیاره برآورد می‌شود—و اسناد علمی حاکی از نقش شگرف هوپانوئیدها در تشکیل منابع غنی نفت خام کره‌زمین است.</p>
+
+        <p>دنیای غشاهای پلاسمایی باکتریایی، تصویری برگرفته از یک مهندسی پیچیده، پویا و به شدت نامتقارن است که در سراسر پوسته به صورت ناهمگون توزیع گشته است؛ به عبارتی، فضاها و دامنه‌های محلی ویژه‌ای وجود دارند که چربی‌های معین در آن بن‌بست موضعی می‌سازند. افزون بر آن، اثبات گردیده که ترکیب لیپیدی غشاها متناسب با تغییرات دمای فرساینده بیرونی مدام در نوسان و انطباق به سر می‌برد تا کیفیت موزائیکی و ویژگی سیالیت غشا در حین رشد حفظ شود. مثلاً غشاهای باکتریایی که در هوای سرد به سر می‌برند، واجد کاتالیز اسیدهای چرب با نقطه ذوب پایین‌تر در فسفولیپیدهای غشا خواهند بود تا از سکون و یخ‌زدگی ماتریکس ممانعت به عمل آورند. <span style="color: var(--accent-color);">[تاثیر فاکتورهای محیطی بر رشد: دما (بخش ۶.۵)]</span></p>
+
+        <p>اگرچه پروکاریوت‌ها واجد اندامک‌های غشایی تکامل‌یافته و پیچیده‌ای نظیر کلروپلاست یا میتوکندری نیستند، اما فرورفتگی‌ها و ساختارهای غشایی غنی درون‌یاخته‌ای ویژه‌ای در بسیاری از باکتری‌ها دیده می‌شود (<strong>شکل ۳.۸</strong>).</p>
+
+        <figure style="padding: 15px;">
+            <div class="figure-placeholder">
+                [Figure 3.7 Membrane Steroids and Hopanoids]<br>
+                (a) Cholesterol (a steroid) is found in eucaryotes.<br>
+                (b) A bacteriohopanetetrol (a hopanoid), as found in bacteria.
+            </div>
+            <figcaption><strong>شکل ۳.۷ استروئیدها و هوپانوئیدهای غشا.</strong> نمونه‌های رایج مقایسه‌ای. (الف) کلسترول (یک استروئید ساختاری) که اختصاصاً در یوکاریوت‌ها یافت می‌شود. (ب) باکتریوهوپان‌تترول (یک ساختار هوپانوئیدی مرجع باکتریایی).</figcaption>
+        </figure>
+
+        <p>تشکیلات تاهورده درون‌یاخته‌ای غشای پلاسمایی در بسیاری از تیره‌های باکتری به چشم می‌خورد و گستره نفوذ آنها در باکتری‌های فتوسنتزی همچون سیانوباکتری‌ها و باکتری‌های ارغوانی یا تیپ‌های با فعالیت تنفسی پرانرژی نظیر باکتری‌های نیتریفیکاتور (شورساز) بسیار فشرده و حیرت‌انگیز است. این بازوهای غشایی درونی می‌توانند به اشکال بسته‌های حبابی کروی، کیسه‌های مسطح موازی یا مجاری لوله‌ای بروز کنند و مأموریت غایی آنها تدارک سطح به مراتب پهناور غشایی برای پشتیبانی از راندمان متابولیکی است. یکی دیگر از این ساختارها که گاهی گزارش می‌شود، مزوزوم است؛ هرچند بحث‌های بسیاری را پیرامون تصنعی بودن یا واقعی بودن آن در جریان نمونه‌برداری به همراه دارد.</p>
+
+        <figure style="padding: 15px;">
+            <div class="figure-placeholder">
+                [Figure 3.8 Internal Bacterial Membranes]<br>
+                Membranes of nitrifying and photosynthetic bacteria:<br>
+                (a) Nitrocystis oceanus with parallel membranes (n) traversing the whole cell. Note fibrillar nucleoplasm.<br>
+                (b) Ectothiorhodospira mobilis with an extensive intracytoplasmic membrane system (x60,000).
+            </div>
+            <figcaption><strong>شکل ۳.۸ غشاهای باکتریایی داخلی.</strong> غشاهای درون سلولی در باکتری‌های فتوسنتزی و شور‌ساز. (الف) سلول <em>Nitrocystis oceanus</em> با توده غشاهای موازی یکنواختی که کل کالبد سلول را در نوردیده‌اند. به نوکلئوپلاسم (n) با تاروپود ظریف فیبریلی توجه فرمایید. (ب) کانون درهم‌تنیده غشای درون‌یاخته‌ای گسترده سلول <em>Ectothiorhodospira mobilis</em> (تصویر با بزرگنمایی ۶۰۰۰۰ برابر).</figcaption>
+        </figure>
+
+	<!-- PAGE 47 -->
+        <div class="page-marker">صفحه ۴۷</div>
+
+        <p>...مزوزوم‌ها، اما در حال حاضر بسیاری از باکتری‌شناسان بر این باورند که آن‌ها در واقع مخدوش‌کننده‌های ساختاری (آرتیفکت‌هایی) هستند که در طی فرآیند تثبیت شیمیایی یاخته‌های باکتریایی جهت عکس‌برداری با میکروسکوپ الکترونی عبوری پدیدار می‌شوند.</p>
+
+        <h3>غشاهای آرکیایی (Archaeal Membranes)</h3>
+        <p>یکی از متمایزترین و منحصر‌به‌فردترین ویژگی‌های حوزه <strong>آرکی‌ها (Archaea)</strong>، ماهیت و ترکیب شیمیایی لیپیدهای غشایی آن‌ها است. آن‌ها از این حیث با هر دو گروه پیشرفته باکتری‌ها (Bacteria) و یوکاریوت‌ها (Eucarya) تفاوت بنیادین دارند که واجد زنجیره‌های هیدروکربنی شاخه‌دار متصل به گلیسرول از طریق <strong>پیوندهای اتری (ether links)</strong> به جای اسیدهای چرب متصل با پیوندهای رایج استری (ester bonds) می‌باشند (<strong>شکل ۳.۹</strong>). علاوه بر آن، در بسیاری از مواقع دو زنجیره گلیسرولی مجزا به یکدیگر متصل می‌شوند تا یک ساختار <strong>تترااتر بلند (tetraether)</strong> و کشیده تشکیل دهند. به طور کلی، زنجیره‌های هیدروکربنی دی‌اتر دارای طول هموار ۲۰ کربن هستند، در حالی که در ساختار تترااتر زنجیره‌ها طولی معادل ۴۰ کربن به خود می‌گیرند. یاخته‌های آرکیایی قادرند با حلقه‌وی کردن بخشی از زنجیره‌های تاشونده خود و تشکیل حلقه‌های پنج‌ضلعی پنتاسیکلیک (pentacyclic rings)، ابعاد و میزان صلبیت کلی تترااترهای غشا را به طور ظریفی تنظیم کنند (شکل ۳.۹). <span style="color: var(--accent-color);">[لیپیدهای غشایی آرکی‌ها (بخش ۲۰.۳)]</span></p>
+
+        <p>گروه‌های حاوی اسید فسفریک، گوگرد و کربوهیدرات‌های گوناگون می‌توانند به آسانی به اتم کربن سوم گلیسرول در مولکول‌های دی‌اتر و تترااتر غشا پیوند یابند تا چربی‌های قطبی (Polar lipids) غشا را بسازند. این مجموعه‌ها بخش اعظم تشکیل‌دهنده غشای آرکی را شامل می‌شوند و حدود ۷۰ الی ۹۳ درصد از کل لیپیدها را به خود اختصاص می‌دهند. مابقی چربی‌های موجود غیرقطبی هستند و معمولاً مشتقاتی از هیدروکربن <strong>اسکولن (squalene)</strong> به شمار می‌روند (<strong>شکل ۳.۱۰</strong>).</p>
+
+        <p>با وجود این تمایزهای شیمیایی و ساختاری عظیم در ماهیت لیپیدهای غشایی، معماری پایه و کالبدی غشای یاخته‌های آرکیایی شباهت شگرفی با غشای باکتری‌ها و سلول‌های یوکاریوتی نشان می‌دهد—به گونه‌ای که در پیکره کلی واجد دو سطح بیرونی آب‌دوست و یک هسته مرکزی عمیقاً مومی و آب‌گریز می‌باشند. هر زمانی که غشاها از زنجیره‌های دی‌اتر $C_{20}$ شکل گرفته باشند، یک غشای دو‌لایه‌ای استاندارد پدیدار می‌گردد (<strong>شکل ۳.۱۱الف</strong>). اما هنگامی که غشاها از تترااترهای $C_{40}$ سازماندهی می‌شوند، یک غشای تک‌لایه‌ای (Monolayer) صلب و بسیار پایدار ایجاد می‌گردد (<strong>شکل ۳.۱۱ب</strong>). همانطور که پیش‌بینی می‌شود، برای تضمین بقا و افزایش پایداری غشایی در زیستگاه‌های طاقت‌فرسا...</p>
+
+        <figure style="padding: 15px;">
+            <div class="figure-placeholder">
+                [Figure 3.9 Archaeal Membrane Lipids]<br>
+                Comparison of bacterial/eucaryotic lipid and archaeal lipids:<br>
+                - A bacterial or eucaryotic lipid: Glycerol + Ester bond + Stearic acid.<br>
+                - Archaeal glycerolipids:<br>
+                  * Ether bond + Phytanol -> Phytanylglycerol diether.<br>
+                  * Dibiphytanyldiglycerol tetraether.<br>
+                  * Tetraether with bipentacyclic C40 biphytanyl chains.
+            </div>
+            <figcaption><strong>شکل ۳.۹ ساختار لیپیدهای غشای آرکیایی.</strong> مقایسه تفاوت‌های کلیدی بین چربی‌های غشاهای آرکیایی با چربی‌های غشایی باکتریایی. لیپیدهای غشای آرکی‌ها، به جای اسیدهای چرب با پیوند استری در باکتری‌ها، بر پایه مشتقات اتری ایزوپرانیل گلیسرول سوار شده‌اند. سه نمونه شناخته‌شده و مرجع از گلیسروپلی‌ساکاریدهای چربی آرکیایی به تصویر کشیده شده است.</figcaption>
+        </figure>
+
+        <figure style="padding: 15px;">
+            <div class="figure-placeholder">
+                [Figure 3.10 Nonpolar Lipids of Archaea]<br>
+                Chemical structures of nonpolar lipids in Archaea:<br>
+                - Squalene (C30 isoprenoid)<br>
+                - Tetrahydrosqualene (hydroisoprenoid derivative)
+            </div>
+            <figcaption><strong>شکل ۳.۱۰ چربی‌های غیرقطبی آرکی‌ها.</strong> دو نمونه بارز از غالب‌ترین چربی‌های غیرقطبی در غشاهای آرکی، شامل هیدروکربن ایزوپرنوئیدی عریض $C_{30}$ اسکولن و یکی از مشتقات هیدروایزوپرنوئیدی آن، یعنی تتراهیدرواسکولن.</figcaption>
+        </figure>
+
+        <figure style="padding: 15px;">
+            <div class="figure-placeholder">
+                [Figure 3.11 Examples of Archaeal Membranes]<br>
+                (a) A membrane composed of integral proteins and a bilayer of C20 diethers.<br>
+                (b) A rigid monolayer composed of integral proteins and C40 tetraethers.
+            </div>
+            <figcaption><strong>شکل ۳.۱۱ مدل‌های ساختاری غشاهای آرکیایی.</strong> (الف) غشایی سنتی متشکل از پروتئین‌های درونی (انتگرال) غرق‌شده در یک دولایه از دی‌اترهای $C_{20}$. (ب) غشای تک‌لایه‌ای صلب و بسیار پایدار متشکل از پروتئین‌های درونی و تترااترهای بلند $C_{40}$.</figcaption>
+        </figure>
+
+        <!-- PAGE 48 -->
+        <div class="page-marker">صفحه ۴۸</div>
+
+        <p>...یاخته به پایداری شدید در برابر عوامل محیطی مرگبار، غشاهای آرکی‌های ترموفیل شدید (Extreme thermophiles) مانند جنس‌های <strong>ترموبلاسما (Thermoplasma)</strong> و <strong>سولفولوبوس (Sulfolobus)</strong> که به شکل بهینه در دماهای بالاتر از ۸۵ درجه سانتی‌گراد رشد و نمو می‌کنند، تقریباً به طور کامل از تک‌لایه‌های فشرده تترااتر تشکیل شده است. در طرف مقابل، آرکی‌هایی که در محیط‌های خنک یا معتدل زیست می‌کنند واجد غشاهای مخلوط و موزائیکی متشکل از بخش‌های تک‌لایه‌ای در مجاورت بخش‌های دولایه‌ای انعطاف‌پذیر می‌باشند. <span style="color: var(--accent-color);">[بخش آرکی‌ها: ترموپلاسماها (بخش ۲۰.۳)؛ سولفولوبوس (بخش ۲۰.۲)]</span></p>
+
+        <div class="review-box" style="margin-top: 25px; margin-bottom: 25px;">
+            <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">سوالات مروری بخش غشاهای یاخته</h3>
+            <ol>
+                <li>مأموریت‌ها و وظایف اصلی غشای پلاسمایی را در کالبد پروکاریوتی بنویسید.</li>
+                <li>مدل موزائیک سیال غشا را تشریح کرده و یک شکل شماتیک دارای برچسب برای نمایش ماتریکس آن رسم کنید.</li>
+                <li>تفاوت‌های شیمیایی و فیزیکی غشاهای باکتریایی را با غشاهای تیره آرکیایی مقایسه کرده و در قالب یک متن هم‌ارزی تضادهای آن‌ها را بررسی نمایید.</li>
+                <li>بحث کنید که چگونه باکتری‌ها و آرکی‌ها کیفیت چربی‌های غشایی خود را متناسب با نوسانات حرارتی و فاکتورهای ویرانگر محیطی دستخوش تغییر و انطباق می‌کنند.</li>
+            </ol>
+        </div>
+
+        <h2>۳.۳ ماتریکس سیتوپلاسمی (The Cytoplasmic Matrix)</h2>
+        <p><strong>ماتریکس سیتوپلاسمی (سیتوسول)</strong> ماده روان و مملو از مولکول‌های حیاتی است که نوکلئوئید (هسته‌مانند)، ریبوزوم‌های سازنده و اجسام گنجالی گوناگون در آن معلق و غوطه‌ور شده‌اند. این بستر ساختاری برخلاف سلول‌های یوکاریوتی، فاقد هرگونه اندامک محصور در غشاهای چربی کلاسیک (نظیر میتوکندری یا کلروپلاست) است و بخش عظیمی از آن را آب تشکیل می‌دهد (به گونه‌ای که حدود ۷۰ درصد از حجم توده یاخته‌های باکتریایی را آب تشکیل داده است). تا سال‌ها پیش باور رایج بر این بود که ماتریکس باکتری‌ها فاقد اسکلت سلولی است. به مجموعه غشای پلاسمایی و کلیه اجزای درونی محاط شده در آن اصطلاحاً <strong>پروتوپلاست (protoplast)</strong> می‌گویند؛ در نتیجه، ماتریکس سیتوپلاسمی جزء اصلی پیکره پروتوپلاست محسوب می‌شود.</p>
+
+        <h3>اسکلت سلولی پروکاریوتی (The Procaryotic Cytoskeleton)</h3>
+        <p>هنگامی که یاخته با بهره‌گیری از میکروسکوپ الکترونی دقیق بررسی می‌شود، ماتریکس سیتوپلاسمی مملو از ریبوزوم‌های متراکم به چشم می‌آید. برای سالیان طولانی دانشمندان گمان می‌کردند که پهنه پروکاریوتی تهی از ابزارهای پیشرفته سازمان‌دهی فضایی و پویایی درونی است، زیرا فاقد شبکه‌بندی اسکلت سلولی (Cytoskeleton) می‌باشد. اما با کشف ساختارهای نوین، کپی‌های شگفتی از هر سه ساختار اسکلت سلولی یوکاریوتی (شامل <strong>میکروفیلامنت‌ها</strong>، <strong>رشته‌های حد واسط</strong> و <strong>میکروتوبول‌ها</strong>) در باکتری‌ها ردیابی و تفکیک شد و حداقل یکی از این کپی‌ها در تیره آرکی‌ها نیز به اثبات رسید (<strong>جدول ۳.۲</strong>). این رشته‌های بومی پروکاریوتی شباهت ساختاری بسیار بالایی با همتایان یوکاریوتی خود دارند و وظایف حیاتی مهمی را مدیریت می‌نمایند: از جمله مشارکت فعال در فرآیندهای تقسیم کالبدی سلول، هدایت صحیح پروتئین‌ها به سمت مقاصد قطبی یا دیواره و شکل‌دهی استوار به بدنه یاخته (<strong>جدول ۳.۲ و شکل ۳.۱۲</strong>). <span style="color: var(--accent-color);">[چرخه زندگی یاخته‌های پروکاریوتی: تقسیم سلولی (بخش ۶.۱)]</span></p>
+
+        <figure style="padding: 15px;">
+            <div class="figure-placeholder">
+                [Figure 3.12 The Procaryotic Cytoskeleton]<br>
+                Visualizing the cytoskeletal protein MreB-like (Mbl) in Bacillus subtilis:<br>
+                (a) Arrows point to helical, cable-like structures traversing the cell length.<br>
+                (b) Enlarged view of three cells showing the green fluorescent helical cables.
+            </div>
+            <figcaption><strong>شکل ۳.۱۲ اسکلت سلولی در پروکاریوت‌ها.</strong> تصویرسازی و آشکارساز پروتئین اسکلتی مارپیچ MreB-مانند کدهای ژن Mbl در باکتری <em>Bacillus subtilis</em>. در این تکنیک، پروتئین Mbl به وسیله مهندسی ژنتیک با یک پروتئین رنگی فلورسنت سبز (GFP) متصل شده و یاخته‌ها تحت بازخورد میکروسکوپ نوری فلورسنت مانیتور گردیده‌اند. (الف) پیکان‌ها به کابل‌های حلقوی و اسکلت مارپیچی امتداد یافته در پهنای درونی یاخته اشاره دارند. (ب) نمایش با بزرگنمایی بیشتر از سه یاخته مرجع بخش الف.</figcaption>
+        </figure>
+
+        <h3 style="margin-top: 25px;">جدول ۳.۲: پروتئین‌های اسکلت سلولی پروکاریوتی</h3>
+        <div style="overflow-x: auto; margin-bottom: 25px;">
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid var(--border-color); font-size: 0.9rem; text-align: right;">
+                <thead>
+                    <tr style="background-color: var(--surface-color); border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 10px; border: 1px solid var(--border-color);">پروتئین پروکاریوتی</th>
+                        <th style="padding: 10px; border: 1px solid var(--border-color);">همتای ساختاری یوکاریوتی</th>
+                        <th style="padding: 10px; border: 1px solid var(--border-color);">عملکرد و وظیفه اصلی</th>
+                        <th style="padding: 10px; border: 1px solid var(--border-color);">توضیحات و دامنه انتشار</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">FtsZ</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">توبولین (Tubulin)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">تقسیم سلولی (تشکیل حلقه انقباضی سپتوم)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">به فراوانی و به طور گسترده در هر دو حوزه باکتری‌ها و آرکی‌ها ردیابی شده است.</td>
+                    </tr>
+                    <tr style="background-color: rgba(255,255,255,0.02);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">MreB</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">اکتین (Actin)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">تعیین و حفظ شکل سلول (کشیدگی باکتری‌های میله‌ای)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">در اکثر باکتری‌های میله‌ای‌شکل (باسیل‌ها) دیده می‌شود؛ در باکتری <em>Bacillus subtilis</em> تحت نام Mbl خوانده می‌شود.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">کرسنتین (Crescentin)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">رشته‌های حد واسط (Intermediate filaments)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">خمیدگی طبیعی یاخته و ایجاد شکل فیزیکی هلالی باکلوفت</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">اختصاصاً در باکتری خمیده <em>Caulobacter crescentus</em> ردیابی شده است.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>اجسام گنجالی (Inclusion Bodies)</h3>
+        <p><strong>اجسام گنجالی (اندوخته‌های درون‌یاخته‌ای)</strong>، گرانول‌های متراکمی از مواد آلی یا معدنی در فازهای گوناگون هستند که غالباً با کیفیت و وضوح بالا تحت هدایت میکروسکوپ نوری در ماتریکس سیتوپلاسمی نمایان می‌باشند. این انباشته‌های زیستی برای مقاصد گوناگونی به کار گرفته می‌شوند (البته مأموریت غایی آن‌ها ذخیره‌سازی زودهنگام مواد آلی برای سوخت‌های کربنی و بهره‌برداری‌های پرانرژی است)؛ علاوه بر آن، با پیوند دادن ترکیبات حل‌شده مادی در فرم‌های غیرمحلول، فشار اسمزی درونی یاخته را در سطوح ایمن نگه می‌داند. برخی از این توده‌ها به شکل کاملاً آزاد در سیتوزول شناورند—نظیر گرانول‌های غنی پلی‌فسفات، ذخایر نیتروژنی سیانوفیسین و گرانول‌های پر از قند گلیکوژن. در مقایسه، مابقی اجسام گنجالی به واسطه حصاری نازک به قطر ۲ الی ۴ نانومتر محصور گشته‌اند که به شکل لایه‌ای انفرادی حاوی پیوندهای پروتئینی یا ترکیبی از غشاهای پروتئینی-لیپیدی قرار دارد. نمونه‌های بارزی از این گنجینه‌های مستور شامل گرانول‌های پلی-بتا-هیدروکسی‌بوتیرات، برخی توده‌های گلیکوژنی ویژه، واکوئل‌های گوگردی، تنه کربوکسی‌زوم‌ها و واکوئل‌های پر از سیال گاز هستند. حجم و فراوانی عددی این دانه‌ها متناسب با حضور یا محدودیت مواد مغذی در زیستگاه مدام در تغییر است. به عنوان نمونه، گرانول‌های پلی‌فسفات...</p>
+
+        <!-- PAGE 49 -->
+        <div class="page-marker">صفحه ۴۹</div>
+
+        <p>...به سرعت در محیط‌های مرطوب اقیانوسی و آب‌های شیرین که با کمبود چشمگیر فسفات روبرو هستند، مصرف و تخلیه می‌شوند. در زیر شرح کوتاهی ر مهم‌ترین انباشته‌ها و اجسام گنجالی زنده آمده است.</p>
+
+        <p>اجسام گنجالی آلی مرجع عمدتاً ذخایری از پلیمرهای کربوهیدراتی گلیکوژن یا ترکیبات اسیدی پلی-بتا-هیدروکسی‌آلکانوات (نظیر پلی-بتا-هیدروکسی‌بوتیرات) هستند. <strong>گلیکوژن</strong> پلیمری پیچیده و منشعب از مولکول‌های گلوکز است که زنجیره‌های اصلی آن با پیوندهای آلفا(1←4) به یکدیگر گره خورده و شاخه‌برگ‌های فرعی آن با پیوند آلفا(1←6) در ابعاد طولی امتداد یافته‌اند. در مقابل، پلیمر <strong>پلی-بتا-هیدروکسی‌بوتیرات (PHB)</strong> حاوی مولکول‌های به شدت منسجم بتا-هیدروکسی‌بوتیرات است که با پیوندهای پایدار استری میان گروه‌های کربوکسیل و هیدروکسیل مولکول‌های پهلویی متصل شده‌اند. به طور معمول باکتری‌ها تنها واجد یکی از این ذخایر کربنی غنی در بدنه خود هستند، اما در تعداد معدودی از باکتری‌های فتوسنتزی هر دو توده آلفا در کنار هم ردیابی شده‌اند. پلیمر PHB در گرانول‌های کروی متمایزی با قطر حدودی ۰.۲ الی ۰.۷ میکرومتر انباشته می‌گردد که برای آشکارساز با میکروسکوپ نوری به خوبی با رنگ چربی‌دوست <strong>سودان بلک</strong> رنگ می‌گیرند و در کادر میکروسکوپ الکترونی عبوری (TEM) به شکل حباب‌ها یا «حفره‌ها» و دایره‌های سفید خالی در معرض تماشا قرار دارند (<strong>شکل ۳.۱۳الف</strong>). این خلأ کاذب به علت استفاده از الکل‌ها و حلال‌های آلی گوناگون در مرحله آماده‌سازی بافت چربی برای میکروسکوپ الکترونی رخ می‌دهد که ماتریکس مومی PHB را در خود حل می‌نمایند. در نقطه مقابل، گلیکوژن به شکل همگن‌تر و به صورت گویچه‌های ریز بسیار ظریفی (با قطر حدودی ۲۰ الی ۱۰۰ نانومتر) در کل ماتریکس سیتوپلاسمی پخش شده است که بررسی تفکیکی آن تنها با استفاده از وضوح بالای میکروسکوپ الکترونی مقدور می‌گردد. چنانچه یاخته‌ها غنی از گلیکوژن باشند، مجاورت آن‌ها با معرف‌های یددار، رنگ تدافعی قرمز-قهوه‌ای پدید می‌آورد. گرانول‌های گلیکوژن و PHB وظیفه ذخیره کربن و انرژی برای سنتز و ساخت پروتئین‌ها جهت حفظ توان بقا در فصول گرسنگی را بر عهده دارند. تعداد اندکی از باکتری‌ها نیز کربن را در فرم قطرات لیپیدی ساده ذخیره می‌کنند. <span style="color: var(--accent-color);">[کربوهیدرات‌ها (پیوست I)]</span></p>
+
+        <p><strong>سیانوفیسین‌ها (ذخایر غنی نیتروژن):</strong> سیانوباکتری‌ها به عنوان رده پیشرفته‌ای از باکتری‌های فتوسنتزی، واجد دو نوع جسم گنجالی آلی بسیار منحصر‌به‌فرد می‌باشند. گرانول‌های متمایز سیانوفیسین (<strong>شکل ۳.۱۳ب</strong>) از توده‌های پلیمری طویلی متشکل از مقادیر برابر اسیدهای آمینه پر انرژی <strong>آرژنین</strong> و <strong>آسپارتیک اسید</strong> پدید آمده‌اند. ابعاد فیزیکی این گرانول‌ها به اندازه کافی درشت است که به سادگی به وسیله میکروسکوپ نوری شکار شوند و مأموریت حیاتی آن‌ها اندوختن توده نیتروژن مازاد برای یاخته است.</p>
+
+        <p><strong>کربوکسی‌زوم‌ها (حصار تثبیت کربن):</strong> کربوکسی‌زوم‌ها ساختارهای چندوجهی ایده آلی با بازه قطر ۱۰۰ نانومتر هستند که مخزن انباشت فوق‌العاده متراکم آنزیم مادری <strong>ریبولوز-۱،۵-بیس‌فسفات کربوکسیلاز (روبیسکو - Rubisco)</strong> به شمار می‌روند؛ روبیسکو مأمور طلایی فرآیندهای تثبیت گاز مادری دی‌اکسید کربن در باکتری‌های شیمیواتوتروف و فتوسنتزی است. آنزیم روبیسکو به عنوان بازوی بیوشیمیایی حیات، مأموریت تبدیل دی‌اکسید کربن اتمسفری به قندهای زنده و آلی را بر عهده دارد. حضور متراکم روبیسکو به صورت شبکه‌های شبه کریستالی در درون کربوکسی‌زوم‌ها مانع نشت یا نفوذ کاتالیزوری آن در بخش‌های سیتوپلاسمی شده و بازدهی غایی را در تثبیت فوتونی کربن بالا می‌برد.</p>
+
+        <figure style="padding: 15px;">
+            <div class="figure-placeholder">
+                [Figure 3.13 Inclusion Bodies in Bacteria]<br>
+                (a) TEM of Bacillus megaterium (x30,500). Poly-b-hydroxybutyrate (PHB), Cell wall (CW), Nucleoid (N), Plasma membrane (PM), Mesosome (M), Ribosomes (R).<br>
+                (b) Fine structure of the cyanobacterium Anacystis nidulans. In cell division with septum (LI, LII). Structural features: cell wall, outer S-layers (LIII, LIV), polyphosphate granules (pp), polyhedral body (pb), cyanophycin granules (c), plasma membrane (pm), thylakoids.<br>
+                (c) Chromatium vinosum with intracellular sulfur globules under light microscope (x2,000).
+            </div>
+            <figcaption><strong>شکل ۳.۱۳ اجسام گنجالی درون‌یاخته‌ای باکتریایی.</strong> (الف) نمای میکروسکوپ الکترونی عبوری (TEM) از یاخته باکتری <em>Bacillus megaterium</em> (بزرگنمایی ۳۰۵۰۰ برابر). گرانول‌های مشخص پلی-بتا-هیدروکسی‌بوتیرات (PHB)، کالبد دیواره سلولی (CW)، تارهای نوکلئوئید (N)، غشای پلاسمایی (PM)، فرورفتگی مزوزومی (M) و توده‌های ریبوزومی (R) به وضوح مشخص هستند. (ب) کالبدشناسی ظریف سیانوباکتریوم <em>Anacystis nidulans</em>. این سلول در فاز تقسیمی به سر می‌برد و سپتوم (تیغه میانی تقسیم کانی) به صورت جزئی تشکیل شده است (LI و LII). ساختارهای مرجع: پوشش دیواره بیرونی لایه‌لایه (LIII و LIV)، گرانول‌های دایره‌ای متبلور پلی‌فسفات (pp)، تنه چندوجهی روبیسکو (pb)، دانه‌های زیستی سیانوفیسین (c) و غشای پلاسمایی (pm). غشاهای موازی تیلاکوئیدی سرشار از توده‌های گیرنده نور در سرتاسر کانون سلول امتداد دارند. (ج) یاخته فتوسنتزی غنی <em>Chromatium vinosum</em> حاوی واکوئل‌ها و گویچه‌های گوگردی به شدت درخشان در داخل سلول؛ تصویر ثبت‌شده با میکروسکوپ نوری زمینه روشن (بزرگنمایی ۲۰۰۰ برابر).</figcaption>
+        </figure>
+
+        <!-- PAGE 50 -->
+        <div class="page-marker">صفحه ۵۰</div>
+
+        <p>یکی از درخشان‌ترین و مهندسی‌شده‌ترین واکوئل‌های آلی موجود، <strong>واکوئل گازی (gas vacuole)</strong> نام دارد.</p>
+
+        <p>وظیفه بنیادی واکوئل گازی ایجاد نیروی شناوری ارشمیدسی و کنترل بقای معلق بودن در ارتفاعات گوناگون آب برای پروکاریوت‌های آبزی بر عهده دارد (رویدادی به شدت پر ارزش برای آرکی‌های هالوفیل دوستدار نمک شدید نظیر خانواده <strong>هالوباکتریوم (Halobacterium)</strong> و باکتری‌های فتوسنتزی مرطوب مانند جنس <strong>تیوتریکس (Thiothrix)</strong>). واکوئل‌های گازی در اصل تجمعات یکپارچه‌ای از شمار بسیاری وزیکول‌های گازی استوانه‌ای، شکلاتی و کاملاً توخالی می‌باشند (<strong>شکل ۳.۱۴</strong>). دیواره این مخازن به طور انحصاری از یک نوع مولکول پروتئینی چیده شده است. این تکه‌های پروتئینی به گونه‌ای متبلور و هم‌کفو هم می‌گردند که تشکیل یک استوانه پوک و صلب را بدهند که به هیچ وجه به مولکول‌های آب اجازه رخنه نمی‌دهد، اما گازهای گوناگون معلق در آب اتمسفری (مانند اکسیژن، نیتروژن و کربن دی‌اکسید) به راحتی در آن نفوذ می‌کنند. پروکاریوت‌های واجد این کیسه‌های گازی می‌توانند با باد کردن یا فرونشاندن حجم گازی وزیکول‌ها، شناوری خود را متناسب با دریافت بهینه پرتوهای فرابنفش فوتونی، چگالی مواد مغذی و دمای آب به طور دائم بالا و پایین ببرند. فروافتادن این کیسه‌ها به سادگی به وسیله ضربه‌های هیدرولیکی یا فشارهای ناگهانی بیرونی ممکن است و یاخته جهت بالا رفتن دوباره به سرعت نسبت به ترشح پروتئینی کیسه‌های نو همت می‌گمارد.</p>
+
+        <p>دو دسته و الگوی اساسی از <strong>اجسام گنجالی غیرآلی (معدنی)</strong> در سلسله یاخته‌های باکتریایی شناخته شده است که عبارتند از: گرانول‌های پلی‌فسفات و گرانول‌های انباشت گوگرد. سلول‌ها ترکیبات اسیدی فسفات را عمدتاً در فرم‌های متراکمی از <strong>گرانول‌های پلی‌فسفات</strong> یا <strong>گرانول‌های وولوتین (volutin granules)</strong> طبقه‌بندی می‌نمایند (شکل ۳.۱۳ب). پلی‌فسفات در حقیقت پلیمری خطی و باردار از ارتوفسفات‌های تکرارشونده است که با پیوندهای قوی متصل گشته‌اند. در نتیجه، این انباشت‌های وولوتینی سهم بزرگی در نگهداری ذخایر اسیدهای نوکلئیک بر عهده دارند؛ به علاوه، در تعداد کثیری از یاخته‌ها این گرانول‌ها به عنوان اهرم‌های پرانرژی مصرف می‌شوند و توان پیوندی پلی‌فسفات قادر است به جای مولکول‌های ATP در فرآیندهای شیمیایی مصرف شود. این گویچه‌ها به علت ویژگی‌های فیزیکی خود و در تعامل با معرف متیلن بلو یا تولوییدن بلو، پدیده متاکرومازیا (رنگ‌افزایی متغیر) را نشان می‌دهند و از این رو به عنوان <strong>گرانول‌های متاکروماتیک (metachromatic granules)</strong> نیز شهرت دارند. گرانول‌های گوگرد به وفور در برخی گونه‌های نیتریفیکاتور و فتوسنتزی برای ذخیره موقت این عنصر وجود دارند (شکل ۳.۱۳ج). مثلاً باکتری‌های فتوسنتزی ارغوانی قادرند از گاز سولفید هیدروژن ($H_2S$) به عنوان دهنده اولیه الکترون استفاده کنند و اتم‌های گوگرد حاصل از آن را به شکل گذرا در فضای مادری پری‌پلاسم یا دیواره‌های غشایی ذخیره نمایند.</p>
+
+        <p>مخازن غیرآلی در پاره‌ای از مواقع علاوه بر ذخیره‌سازی، مأموریت‌های جهتی و حرکتی مهمی را نیز سامان می‌دهند. مثال بسیار جالب آن، گرانول‌های حاوی آهن یا آهنربای طبیعی <strong>مگنتوزوم (magnetosome)</strong> است؛ این بازوهای مغناطیسی به باکتری‌های مستعد اجازه می‌دهند تا خود را به دقت با راستای بردار مغناطیسی سیاره زمین هماهنگ سازند. غالباً این باکتری‌های مغناطیسی واجد زنجیری موازی از گویچه‌های مگنتیت ($Fe_3O_4$) در فضای میان‌یاخته‌ای خود هستند. قطر متوسط مگنتوزوم‌ها در بازه ۳۵ الی ۱۲۵ نانومتر برآورد شده و هر یک از آن‌ها توسط تک غشای فسفولیپیدی دولایه مستور شده‌اند. حضور این پیوندهای فلزی درست مانند قطب‌نما، جهت‌یابی باکتری‌ها به سمت رسوبات کف آب و مناطق تاریک و کم اکسیژن را گارانتی می‌سازد (تنوع میکروبی و اکولوژی ۳.۲).</p>
+
+        <h3>ریبوزوم‌ها (Ribosomes)</h3>
+        <p>همانطور که ذکر گردید، ماتریکس فیزیکی به شدت مملو از ریبوزوم‌ها فعال است که برخی از آن‌ها نیز به شکل بسیار سست با مرزهای غشایی سلول همراه شده‌اند. <strong>ریبوزوم‌ها (Ribosomes)</strong>، تشکیلات مولکولی فوق‌العاده پیچیده و چگالی هستند که سهم اساسی ساختاری آن‌ها متشکل از کلاف‌های پروتئینی ویژه و رشته‌های اسید ریبونوکلئیک ریبوزومی (rRNA) است. ریبوزوم‌ها کارخانه‌های اختصاصی تولید زنجیره‌های طویل پروتئین در سلول هستند؛ آن ریبوزوم‌هایی که در فاز معلق سیتوزول به سر می‌برند مسئول تولید پروتئین‌های داخلی ترشحی هستند، در حالی که ریبوزوم‌های لنگر انداخته در حاشیه غشاء، پروتئین‌های غشایی یا ترشحی ناقل را به مقصد نهایی پمپاژ می‌کنند. هر دستگاه ریبوزومی از همراهی دو زیرواحد پروتئینی نامتقارن تشکیل شده است. ریبوزوم‌های پروکاریوتی ابعادی کوچک‌تر از نمونه‌های یوکاریوتی داشته و به عنوان <strong>ریبوزوم‌های $70S$</strong> شناخته می‌شوند (در مقایسه با ریبوزوم‌های $80S$ یوکاریوت‌ها)； قطر متوسط آن‌ها حدود ۱۴ الی ۱۵ نانومتر در ۲۰ نانومتر بوده و جرم معادل مولکولی آن‌ها نزدیک به ۲.۷ میلیون دالتون است. ریبوزوم پروکاریوتی متشکل از یک زیرواحد بزرگ <strong>$50S$</strong> و یک زیرواحد کوچک <strong>$30S$</strong> است (<strong>شکل ۳.۱۵</strong>). پارامتر "S" نمایانگر <strong>واحد سودبرگ (Svedberg unit)</strong> است که نرخ سرعت ته‌نشینی و رسوب‌گذاری اجسام را در مخازن سانتریفیوژ دور بالا بازگو می‌کند. هرچقدر تراکم یا جرم فیزیکی یک مولکول فشرده‌تر باشد، سرعت ته نشست آن بیشتر بوده و ضریب عددی سودبرگ بالاتری به خود می‌گیرد.</p>
+
+        <figure style="padding: 15px;">
+            <div class="figure-placeholder">
+                [Figure 3.14 Gas Vacuoles and Vesicles]<br>
+                TEM freeze-fracture preparation of Anabaena flosaquae (x89,000):<br>
+                - Array of cigar-shaped proteinaceous gas vesicles forming gas vacuoles.<br>
+                - Arrows show longitudinal and cross-sectional cuts of vesicles.
+            </div>
+            <figcaption><strong>شکل ۳.۱۴ وزیکول‌ها و واکوئل‌های گازی.</strong> تصویربرداری فوق‌پایدار نوری به شیوه سرماتراشی (Freeze-fracture) از بدنه سیانوباکتریوم <em>Anabaena flosaquae</em> (بزرگنمایی ۸۹۰۰۰ برابر). کلوپ‌ها و خوشه‌های متراکم لوله‌های سیگارمانندی پدیدار شده‌اند که واکوئل‌های گازی را ترشح می‌کنند. جهت پیکان‌های موازی نماهای مقطعی طولی و عرضی این مخروط‌ها را نشان می‌دهد.</figcaption>
+        </figure>
+
+        <div class="review-box" style="margin-top: 25px; margin-bottom: 25px;">
+            <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">سوالات مروری سیتوپلاسم، اسکلت سلولی و ریبوزوم</h3>
+            <ol>
+                <li>ماهیت فیزیکی، خواص مرطوب‌کننده و وظایف غایی ماتریکس سیتوپلاسمی در پروکاریوت‌ها را خلاصه کنید.</li>
+                <li>تک‌تک اعضای اسکلت سلولی، گرانول‌های انکلوزیون و دستگاه ریبوزومی را معرفی کرده و مأموریت زیستی هر یک را بررسی نمایید.</li>
+                <li>شایع‌ترین و فراوان‌ترین گونه‌های مستقر از اجسام گنجالی را در کالبد یاخته بافت دهی نمایید.</li>
+                <li>ارتباط کارکردی و عمیق ساختار وزیکول‌های واکوئل گازی را با عملکرد بقای آن‌ها در ستون‌های آب تبیین کنید.</li>
+            </ol>
+        </div>
+
+        <!-- PAGE 51 -->
+        <div class="page-marker">صفحه ۵۱</div>
+
+        <div class="review-box" style="border-color: #2196f3; background-color: rgba(33, 150, 243, 0.05); margin-top: 25px; margin-bottom: 25px;">
+            <h3 style="color: #2196f3; border-bottom: 2px solid #2196f3; padding-bottom: 5px;">تنوع میکروبی و اکولوژی ۳.۲</h3>
+            <h4 style="margin: 10px 0 5px 0; font-weight: bold; color: var(--text-primary);">آهنرباهای زنده (Living Magnets)</h4>
+            <p>یاخته‌های باکتریایی علاوه بر فاکتورهای شیمیایی و ترشحات مغذی به عوامل فیزیکی متنوع محیطی نیز واکنش‌های پویایی نشان می‌دهند. یکی از بارزترین و هیجان‌انگیزترین نمونه‌های ثبت شده، رفتار باکتری‌های آهنربادوست آبزی یا باکتری‌های مگنتوتاکتیک (Magnetotactic bacteria) است که حرکت و بقای خود را به طور کامل در جهت خطوط ژئومغناطیسی زمین تنظیم می‌نمایند. این ارگانیسم‌ها واجد زنجیره‌های درون‌یاخته‌ای ویژه‌ای از بلورهای فلزی چگال مگنتیت ($Fe_3O_4$) به نام مگنتوزوم (Magnetosome) در ماتریکس خود هستند. دامنه متوسط قطر این گویچه‌ها مابین ۳۵ الی ۱۲۵ نانومتر قرار دارد و هر بلور توسط یک لایه مجزای غشاهای فسفولیپیدی محصور شده و به شکل کابل موازی در امتداد محور طولی یاخته لنگر انداخته است (<strong>به شکل کادر زیر مراجعه کنید</strong>).</p>
+
+            <p>به جهت آنکه هر تک بلور مگنتیت یک بلورساز مفرط پیوندی است، این مگنتوزوم‌ها در قالب یک قطب‌نمای مینیاتوری کالبد می‌گیرند تا راستای شمال و جنوب جغرافیایی را به یاخته القا نمایند. پاره‌ای از باکتری‌ها واجد مگنتوزوم‌هایی حاوی بلورهای فرومغناطیسی متناوب هم‌ارز نظیر کانی گریژیت ($Fe_3S_4$) و پیریت ($FeS_2$) هستند. از آنجایی که این ترکیبات آهن و گوگرد در مناطق سولفیدی اقیانوس‌ها رواج بالایی دارند، باکتری‌های مگنتوتاکتیک از وجود آن‌ها برای بقا، رانش و جهت‌یابی در رسوبات تاریک بهره می‌جویند. جالب توجه است که باکتری‌های مگنتوتاکتیک بومی نیمکره جنوبی معمولاً کابل‌های مغناطیسی خود را به سمت قطب جنوب ژئومغناطیسی (رو به پایین) نشانه می‌روند؛ دستاوردی منحصربه‌فرد که فرود روان آن‌ها به اعماق لجن‌زارهای تیره و غنی رسوبی را هموار ساخته و آن‌ها را به دور از خطرات و سمیت دوز صعودی اکسیژن جاری در آب‌های سطحی نگه می‌دارد.</p>
+
+            <figure style="background-color: var(--code-bg); margin-bottom: 0; padding: 15px;">
+                <div class="figure-placeholder">
+                    [Box Figures: Magnetotactic Bacteria]<br>
+                    (a) TEM of Aquaspirillum magnetotacticum (x123,000) showing linear chain of electron-dense magnetosome particles (MP). OM: outer membrane. P: periplasmic space. CM: cytoplasmic membrane.<br>
+                    (b) Isolated magnetosomes (x140,000).<br>
+                    (c) Bacteria migrating in waves under magnetic field.
+                </div>
+                <figcaption style="color: var(--text-primary); border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 10px;"><strong>باکتری‌های مگنتوتاکتیک به عنوان دوقطبی‌های زنده.</strong> (الف) نمای میکروسکوپ الکترونی عبوری (TEM) از باکتری متحرک هلالی <em>Aquaspirillum magnetotacticum</em> (که با بزرگنمایی ۱۲۳۰۰۰ برابر تصویربرداری شده است). به چیدمان باشکوه زنجیره کریستالی مگنتوزوم با دانسیته بالای الکترونی (MP) در محور میانی سلول توجه کنید. علائم مرجع: OM: غشای بافت بیرونی؛ P: فضای پری‌پلاسمایی انتقال； CM: غشای پلاسمایی. (ب) کالبدهای مجزا، خالص و تخلیص شده مگنتوزوم (بزرگنمایی ۱۴۰۰۰۰ برابر). (ج) مهاجرت زیگزاگی و مواج ارتش باکتری‌ها در واکنش به القای پرتوهای مغناطیسی خارجی.</figcaption>
+            </figure>
+            <div style="font-size: 0.75rem; color: var(--text-secondary); text-align: left; direction: ltr; margin-top: 10px;">
+                Sources: Blakemore, R. P. 1975. Magnetotactic bacteria. Science 190:377-79; and Bazylinski, D. A. 1995. Structure and function of magnetosomes. ASM News 61:337-43.
+            </div>
+        </div>
+
+        <!-- PAGE 52 -->
+        <div class="page-marker">صفحه ۵۲</div>
+
+        <figure style="padding: 15px;">
+            <div class="figure-placeholder">
+                [Figure 3.15 Procaryotic Ribosome]<br>
+                Subunits of bacterial 70S ribosome:<br>
+                - 50S large subunit containing 23S rRNA and 5S rRNA + proteins.<br>
+                - 30S small subunit containing 16S rRNA + proteins.<br>
+                - tRNA (gold molecule) bound at the A (aminoacyl) site.<br>
+                Model solved by X-ray crystallography of pure ribosomal crystals.
+            </div>
+            <figcaption><strong>شکل ۳.۱۵ ساختار سه‌بعدی ریبوزوم پروکاریوتی.</strong> نمایش جزئیات و ساختار دو زیرواحد مأمور جفت‌شونده ریبوزوم باکتریایی. زیرواحد بزرگ $50S$ حاوی مولکول‌های ساختاری رمزگذار $23S\ rRNA$ و $5S\ rRNA$ است در حالی که بازوی کوچک $30S$ میزبان مولکول $16S\ rRNA$ می‌باشد. یک مولکول گرانبهای RNA ناقل (tRNA) به رنگ طلایی در جایگاه ترجمه A پهلو گرفته است. این ساختار از طریق اشعه ایکس کریستالوگرافی کریستال‌های خالص ربوده شده پدیدار شده است.</figcaption>
+        </figure>
+
+        <h2>۳.۴ نوکلئوئید (The Nucleoid)</h2>
+        <p>احتمالاً نمایان‌ترین، عمیق‌ترین و بنیادی‌ترین تفاوت ساختاری میان جانداران تک‌سلولی پروکاریوتی و سلول‌های تکامل‌یافته یوکاریوتی، استراتژی و شیوه بسته‌بندی، چیدمان و سازمان‌دهی فیزیکی طناب‌های ژنتیکی مادری آن‌ها است. سلول‌های یوکاریوتی دارای دو یا چندین رشته کروموزوم پیچیده خطی می‌باشند که در قالب دیواره‌های اندامک محصور در غشایی دو لایه به نام هسته (Nucleus) سازماندهی شده‌اند. در نقطه مقابل، پهنه بیولوژیک پروکاریوت‌ها کلاً تهی از هسته محصور در غشای فیزیکی است. کروموزوم بومی پروکاریوت‌ها در ناحیه ویژه‌ای از سیتوپلاسم با اشکال نامنظم و بدون مرز هیدرولیکی به نام <strong>نوکلئوئید (nucleoid)</strong> یا منطقه هسته‌مانند پهلو گرفته است (واژه‌های متراکم هم‌ارز دیگری مانند کالبد باکتریال، کلاف کروماتینی و بخش هسته‌ای نیز به کار می‌رود) (<strong>شکل ۳.۱۶</strong>). به طور عمومی باکتری‌ها حاوی یک طناب حلقوی و منفرد از رشته‌های جفت‌شونده دورشته به نام <strong>دئوکسی‌ریبونوکلئیک اسید (DNA)</strong> به عنوان کروموزوم مادری خود می‌باشند، با این حال گونه‌های استثنایی واجد DNA کاملاً خطی بوده و بعضی از ناقل‌های مرگبار دیگر از جمله عامل وبا <em>Vibrio cholerae</em> یا عامل عفونت لایم <em>Borrelia burgdorferi</em> واجد بیش از یک کلاف کروموزومی مستقل در خود هستند.</p>
+
+        <p>بهره‌گیری هموار از تکنیک‌های نوین میکروسکوپ نوری فلورسنت و الکترونی ارزش بی‌بدیلی در کشف فیبرهای تار و پود نوکلئوئید ارائه کردند. نوکلئوئید در یاخته‌هایی که در فاز رشد لگاریتیمی فعال به سر می‌برند به شکل تارهای رشته‌ای بسیار باریکی نمایان می‌گردد که تحلیل‌های مادی گویای طناب طویل باز شده DNA است. در سلول‌های با رشد انفجاری، شاخه‌های باریک فیزیکی نوکلئوئید به اعماق فضاهای ماتریکس سیتوپلاسمی چنگ انداخته‌اند؛ پدیده‌ای هوشمندانه که نشان‌دهنده جریان مستمر سنتز فوتونی زنجیره‌های mRNA از روی ژن‌های مادری است. به علاوه، آزمایش‌ها نشان می‌دهند که در یاخته‌های قبل از تکمیل فیزیکی سپتوم تقسیم، چندین توده نوکلئوئیدی تفکیک شده کاتالیز می‌شوند تا سلول‌های آینده بدون کوچک‌ترین نقصی کپی مادری را به ارث ببرند (<strong>شکل ۳.۱۶الف</strong>).</p>
+
+        <figure style="padding: 15px;">
+            <div class="figure-placeholder">
+                [Figure 3.16 Procaryotic Nucleoids and Chromosomes]<br>
+                (a) Color-enhanced TEM of dividing E. coli cells. Red areas are the diverging nucleoid masses.<br>
+                (b) Chromosome released from a gently lysed E. coli cell. Circular DNA loop is highly supercoiled and approx. 1400 micrometers long, dwarfing the tiny cell envelope.
+            </div>
+            <figcaption><strong>شکل ۳.۱۶ نوکلئوئید و ساختار کروموزومی در جانداران پروکاریوتی.</strong> رشته‌های کروموزوم پروکاریوتی در حاشیه غیرمحصور نوکلئوئید در مایع سیتوزول مستقر می‌شوند. (الف) تصویر کاذب رنگی به دست آمده با میکروسکوپ الکترونی عبوری (TEM) از یاخته باکتری متحرک <em>Escherichia coli</em> در حین تقسیم دوگانه. کانون‌های زرشکی و قرمز نشان‌دهنده کلوخه نوکلئوئید در حال تسهیم و واگرایی بین دو سلول آینده هستند. (ب) کلاف باشکوه و درهم‌پیچیده ژنتیکی آزاد شده از یاخته باکتری <em>E. coli</em> که تحت دیواره شکافتن ملایم (لیز سلولی) رها گشته است. به تراکم و فشردگی فوق‌العاده سهمگین طاق دایره‌ای طناب DNA اشاره دارد؛ تمامی این رشته غول‌آسا در فصول کارکردی به صورت تاشده در پیکره میکرومتری باکتری فشرده می‌باشد.</figcaption>
+        </figure>
+
+        <p>امروزه با به‌کارگیری تکنیک‌های نوین آزمایشگاهی، امکان استخراج، ترشح و خالص‌سازی کانون‌های نوکلئوئیدی فراهم گشته است. ارزیابی‌های شیمیایی نشان داده‌اند که نوکلئوئید باکتریایی به طور تقریبی متشکل از ۶۰ درصد کلاف DNA، ۳۰ درصد رشته مادری دستار RNA و ۱۰ درصد پروتئین‌های پایدارکننده کالبدی است. در باکتری <em>Escherichia coli</em>، طول کلی کلاف حلقوی هیدروکربنی DNA آزاد شده حدود ۱۴۰۰ میکرومتر تخمین زده می‌شود (که اعجازآور بوده و تقریباً ۲۳۰ الی ۷۰۰ برابر طویل‌تر از مرز دیوارهای کل کالبد یاخته باکتریایی است) (شکل ۳.۱۶ب). روشن و مبرهن است که این طناب اطلاعاتی عظیم ناگزیر از ترشح الگوهای تاشوندگی فوق‌العاده متراکم و بسیار کارآمد موسوم به <strong>ابرپیچش (supercoiling)</strong> با کمک پروتئین‌های همسو با هیستون‌ها می‌باشد تا بدون کم‌ترین آسیب شیمیایی در ماتریکس خرد نوکلئوئید لنگر اندازد؛ این پروتئین‌های بسته‌کننده در هر دو گروه تکاملی باکتری‌ها و حوزه فراآرکی‌ها یافت می‌شوند، هرچند باکتری‌ها کلاً فاقد پروتئین‌های هیستون واقعی یوکاریوتی می‌باشند.</p>
+
+        <!-- PAGE 53 -->
+        <div class="page-marker">صفحه ۵۳</div>
+
+        <p>البته در پهنه اقیانوس‌های پهناور جهان پاره‌ای از استثناهای استعاری نادر در برابر سازمان غشایی گزارش شده است. حصارهای حاوی DNA عمیقاً غشادار در بعضی از سرده‌های وابسته به شاخه نوین باکتری‌های آبزی <strong>پلانکتومایسس (Planctomycetes)</strong> شناسایی و تفکیک گشته‌اند. به عنوان مثال، باکتری <em>Pirellula</em> واجد یک پوشش مرطوب غشایی تک‌لایه است که توده نوکلئوئید را در بر گرفته و پهنه درونی آن واجد تجمعات شبه ریبوزومی است. در کالیبر خیره‌کننده‌تر، کلاف نوکلئوئیدی باکتری <em>Gemmata obscuriglobus</em> درون یک غشای دو‌لایه کاملاً منسجم و فیزیکی محافظت گردیده است. مطالعات فشرده در سرتاسر جهان برای توجیه چگونگی تکامل این دیواره‌ها و پیامدهای بیولوژیکی آن‌ها در فرآیندهای حیات هم‌اکنون به سختی در جریان است. <span style="color: var(--accent-color);">[بخش باکتری‌ها: شاخه پلانکتومایست‌ها (بخش ۲۱.۴)]</span></p>
+
+        <div class="review-box" style="margin-top: 25px; margin-bottom: 25px;">
+            <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">سوالات مروری منطقه ژنتیکی یاخته‌ها</h3>
+            <ol>
+                <li>شبکه‌بندی، ماهیت، آرایش شیمیایی و کالبد نوکلئوئید و مولکول ژنتیکی DNA درون آن را تبیین کنید.</li>
+                <li>سه مورد از جنس‌های شاخص باکتریایی را نام ببرید که گویای موارد ساختاری استثنایی در ساختار هسته‌ای خود می‌باشند؛ کیفیت تمایز کالبدی تفکیکی را مطرح نموده و دیدگاه زیست‌شناسان را در خصوص وظایف آن‌ها بازگو فرمایید.</li>
+            </ol>
+        </div>
+
+        <h2>۳.۵ پلاسمیدها (Plasmids)</h2>
+        <p>در ورای پهنه طناب ژنتیکی مادری مستقر در لنگرگاه نوکلئوئید، خیل عظیمی از یاخته‌های پروکاریوتی (و برخی تیره‌های قارچی و مخمرها) واجد مولکول‌های مینیاتوری غنی از دورشته‌های DNA مستقل خارج‌کروموزومی به نام <strong>پلاسمیدها (plasmids)</strong> می‌باشند. به طور عمومی، اکثریت سنگینی از پلاسمیدهای باکتریایی و فوق‌آرکیایی که شناسایی گشته‌اند ساختار حلقوی صلب و بسیار فشرده‌ای دارند. با این حال، در دهه‌های اخیر پورتفوی گسترده‌ای از پلاسمیدهای خطی و بازآرا شونده نیز در تیره‌های گوناگون کشف گشته‌اند؛ مثلاً باکتری عامل بیماری عفونی لایم <em>Borrelia burgdorferi</em> حاوی کلکسیون حیرت‌انگیزی شامل ۱۲ پلاسمید خطی همسو با ۹ پلاسمید دایره‌ای کوچک در بدنه خود می‌باشد. پلاسمیدها کدهای ژنتیکی مازاد و مزایای بسیار ارزشمندی را به باکتری‌ها اعطا می‌دارند، کدهایی که گرچه برای بقای روزمره یاخته ضروری نیستند، اما مزیت‌های نجات‌بخشی در هجمه فرساینده طوفان‌های داروهای آنتی‌بیوتیکی یا محیط‌های سمی عرضه می‌نمایند. پلاسمیدها مراجع استراتژیک در مهندسی ژنتیک، فناوری شبیه‌سازی ژنی و کارهای تراریخته محسوب می‌گردند.</p>
+
+        <p>پلاسمیدها مولکول‌هایی از دورشته دوگانه‌ای هستند که به طور مستقل و هماهنگ توان <strong>خودهمانندسازی (Autoreplication)</strong> را حفظ می‌کنند. هر دو الگوی دایره‌ای و خطی مکتوب شده‌اند اما معروف‌ترین کالیبر همان حلقوی متراکم غنی است. پلاسمیدها واجد ترادف آغازین تکثیر اختصاصی (Origin of replication) هستند، پدیده‌ای بیولوژیکی که کنترل چرخه همانندسازی آن‌ها را مستقل از کنترل فرآیندهای کروموزوم مادری به وقوع می‌رساند. ژن‌های پلاسمید معمولاً کمتر از ۳۰ کدهای فعال را شامل می‌شوند و برای بقای یاخته در وضعیت استاندارد ضروری نیستند. با این وجود، حذف فیزیکی یا طبیعی پلاسمیدها از درون یاخته تحت عنوان پدیده <strong>درمان یا حذف پلاسمید (curing)</strong> خوانده می‌شود که به صورت خودبه‌خودی یا بر اثر نوسان دما، گرسنگی شدید یا ممانعت‌های شیمیایی رخ می‌دهد. حذف پلاسمید می‌تواند با تابش پرتوهای فرابنفش، محرومیت‌های حرارتی، رنگ‌های متغیر آکریدین و آنتی‌بیوتیک‌ها تسهیل شود که همانندسازی پلاسمید را بدون تخریب DNA مادری مسدود می‌سازند. <span style="color: var(--accent-color);">[مکانیسم‌های الحاق باکتریایی (بخش ۱۳.۷)； عناصر جابجاشونده ژنتیکی (بخش ۱۳.۵)]</span></p>
+
+        <p>رده‌های پلاسمیدی را می‌توان بر اساس روش بقا، الگوی انتقال و وظیفه اصلی به وضوح تقسیم‌بندی نمود. ویژگی‌های این الگوهای مرجع در **جدول ۳.۳** خلاصه گشته است. کوره پلاسمیدهای <strong>الحاقی (Conjugative plasmids)</strong> بسیار پر زرق و برق و مهم به شمار می‌رود؛ این مجموعه‌ها واجد کلیدهای تولید موهای جنسی (پیلی جنسی - Sex pili) هستند و ترادف انتقال فیزیکی مادری برای القای کپی خود به سایر یاخته‌های مجاور را طی یک فرآیند شبیه‌ساز جفت‌گیری فراهم می‌نمایند. گل سرسبد پلاسمیدهای الحاقی، <strong>فاکتور باروری (Fertility factor یا فاکتور F)</strong> در تیره باکتریایی <em>Escherichia coli</em> است که مأموریت سنتز موهای جنسی را کاتالیز کرده و الحاق سلول $F^+$ دهنده با سلول گیرنده $F^-$ را جهت انتقال اطلاعات ژنتیکی به شدت ترغیب می‌نماید.</p>
+
+        <p><strong>فاکتورهای مقاومت (کدهای R یا پلاسمیدهای R):</strong> پله و تبار چالش‌برانگیز دیگری از پلاسمیدها هستند که کدهای تولید آنزیم‌های بازدارنده جهت خنثی‌سازی آنتی‌بیوتیک‌های نجات‌بخش (مانند آمپی‌سیلین، کربنی‌سیلین و تتراسایکلین) را با خود دارند. این مراجع سهم غول‌آسایی در ایجاد طوفان‌های مقاومت دارویی در بیمارستان‌های پهنه جهان به عهده دارند؛ برخی از این پلاسمیدهای R واجد تک ترادف مقاومتی هستند در حالی که نمونه‌های وخیم واجد بیش از ۸ کد مقاومتی هم‌زمان می‌باشند. از آنجا که بخش بزرگی از کدهای R دارای ویژگی‌های الحاقی می‌باشند، قدرت دارند ظرفیت بقا و خنثی‌سازی آنتی‌بیوتیکی را به طرزی رعدآسا در میان باکتری‌های گوناگون منتشر سازند. <span style="color: var(--accent-color);">[مقاومت‌های آنتی‌بیوتیکی باکتریایی (بخش ۳۴.۶)]</span></p>
+
+        <p>در طبقه‌بندی‌های دیگر، پلاسمیدهای موسوم به <strong>کلسینوژن (Col plasmids)</strong> حضور دارند که واجد ژن‌های هدایت‌کننده‌ی سموم کشنده باکتریوسین موسوم به کلیسین‌ها در باکتری‌ها هستند. باکتریوسین‌ها پروتئین‌های زهردار و به شدت کشنده‌ای هستند که سلول‌های حساس مجاور هم‌ردیف خود را ترور می‌کنند. **پلاسمیدهای بیماری‌زا (Virulence plasmids)** به باکتری‌ها قدرت تهاجم مفرط به میزبان‌ها اعطا می‌کنند؛ سویه‌های آنتروتوکسیک باکتری <em>Escherichia coli</em> به این علت طوفان‌های مرگبار اسهال کودکان را کاتالیز می‌نمایند که حاوی پلاسمیدهای بیماری‌زایی موسوم به سموم روده درون کالبد خود هستند. سلی دیگر به نام **پلاسمیدهای متابولیکی (Metabolic plasmids)** نیز آنزیم‌های فعال هضم‌کننده جهت تخریب تولوئن، ترکیبات آروماتیک سموم آفت‌کش، هیدروکربن‌ها و مواد قندی پیچیده را برای باکتری کاتالیز می‌کنند.</p>
+
+        <!-- PAGE 54 -->
+        <div class="page-marker">صفحه ۵۴</div>
+
+        <h3 style="margin-top: 25px;">جدول ۳.۳: دسته‌های عمده و کلیدی پلاسمیدهای باکتریایی</h3>
+        <div style="overflow-x: auto; margin-bottom: 25px;">
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid var(--border-color); font-size: 0.85rem; text-align: right;">
+                <thead>
+                    <tr style="background-color: var(--surface-color); border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 10px; border: 1px solid var(--border-color); width: 22%;">نوع پلاسمید</th>
+                        <th style="padding: 10px; border: 1px solid var(--border-color); width: 13%;">نماینده مرجع</th>
+                        <th style="padding: 10px; border: 1px solid var(--border-color); width: 15%;">اندازه تقریبی (kbp)</th>
+                        <th style="padding: 10px; border: 1px solid var(--border-color); width: 13%;">تعداد نسخه</th>
+                        <th style="padding: 10px; border: 1px solid var(--border-color); width: 15%;">میزبان بومی</th>
+                        <th style="padding: 10px; border: 1px solid var(--border-color); width: 22%;">ویژگی‌های فنوتیپی / کدهای انتقالی</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold;">فاکتور باروری (Fertility)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">F factor</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۹۵–۱۰۰</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۱–۳</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><em>E. coli, Salmonella</em></td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">سنتز پیلی جنسی، هدایت فرآیندهای هم‌یوغی (الحاق).</td>
+                    </tr>
+                    <tr style="background-color: rgba(255,255,255,0.02);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold; vertical-align: middle;" rowspan="5">پلاسمیدهای مقاومت (R)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">RP4</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۵۴</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۱–۳</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><em>Pseudomonas</em> و باکتری‌های گرم‌منفی</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">پیلی جنسی، فرآیند الحاقی، مقاومت به آنتی‌بیوتیک‌های Amp، Km، Nm، Tet.</td>
+                    </tr>
+                    <tr style="background-color: rgba(255,255,255,0.02);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">R1</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۸۰</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۱–۳</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">باکتری‌های گرم‌منفی</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">مقاومت به آنتی‌بیوتیک‌های Amp، Km، Su، Cm، Sm.</td>
+                    </tr>
+                    <tr style="background-color: rgba(255,255,255,0.02);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">R6</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۹۸</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۱–۳</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><em>E. coli, Proteus</em></td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">مقاومت به داروهای Su، Sm، Cm، Tet، Km، Nm.</td>
+                    </tr>
+                    <tr style="background-color: rgba(255,255,255,0.02);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">R100</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۹۰</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۱–۳</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">گرم منفی‌ها نظیر <em>Shigella</em></td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">مقاومت چندگانه به Cm، Sm، Su، Tet، فلز سمی Hg.</td>
+                    </tr>
+                    <tr style="background-color: rgba(255,255,255,0.02);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">pSJ23a</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۳۶</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">-</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><em>Staphylococcus aureus</em></td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">مقاومت به Pn، فلز جیوه Hg، آرسنات Asa، آنتی‌بیوتیک Gm، Km، Nm، Em.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold; vertical-align: middle;" rowspan="2">پلاسمیدهای باکتریوسین (Col)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">ColE1</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۹</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۱۰–۳۰</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><em>E. coli</em></td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">سنتز و ترشح سم باکتریوسینی کلیسین E1.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">CloDF13</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">-</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">-</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><em>Enterobacter cloacae</em></td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">تولید پروتئین سمی کلواسین DF13.</td>
+                    </tr>
+                    <tr style="background-color: rgba(255,255,255,0.02);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold; vertical-align: middle;" rowspan="3">پلاسمیدهای بیماری‌زایی (Virulence)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">Ent (P307)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۸۳</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">-</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><em>E. coli</em></td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">تولید سم روده آنتروتوکسین اسهال‌زا.</td>
+                    </tr>
+                    <tr style="background-color: rgba(255,255,255,0.02);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">ColV-K30</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۲</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">-</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><em>E. coli</em></td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">ترشح سیدروفور جهت جذب آهن؛ مقاومت به مکانیزم‌های دفاعی سیستم ایمنی.</td>
+                    </tr>
+                    <tr style="background-color: rgba(255,255,255,0.02);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">Ti</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۲۰۰</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">-</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><em>Agrobacterium tumefaciens</em></td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">ایجاد توده سرطانی گال طوقه در ساقه گیاه دو‌لپه‌ای.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid var(--border-color); font-weight: bold; vertical-align: middle;" rowspan="3">پلاسمیدهای متابولیکی (Metabolic)</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">CAM</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۲۳۰</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">-</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><em>Pseudomonas</em></td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">تخریب و هضم کاتالیزوری ترکیب روغنی کافور.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">TOL</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">۷۵</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">-</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><em>Pseudomonas putida</em></td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">تجزیه و مصرف و حلال‌پذیری صنعتی تولوئن سم‌ساز.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">sym</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">-</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">-</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">گونه‌های باکتریایی <em>Rhizobium</em></td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">ایجاد گرهه و برقراری مأموریت خطیر همزیستی تثبیت نیتروژن.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: -15px; margin-bottom: 25px;">
+            * علائم اختصاری مورد استفاده برای مقاومت‌های دارویی و فلزات سمی: Amp، آمپی‌سیلین； Asa، آرسنات； Cm، کلرامفنیکل； Em، اریتثرومایسین； Gm، جنتامایسین； Hg، جیوه； Km، کانامایسین； Nm، نئومایسین； Pn، پنی‌سیلین； Sm، استرپتومایسین； Su، سولفونامیدها； Tet، تتراسایکلین.<br>
+            * شایان ذکر است که خیل وسیعی از پلاسمیدهای R، متابولیکی و بیماری‌زا خود از نوع پلاسمیدهای الحاقی هستند.
+        </div>
+
+        <p>بعضی از گونه‌های معتبر خاکزی وابسته به سرده <em>Rhizobium</em> واجد پلاسمیدهای متابولیکی ویژه‌ای (پلاسمید sym) در کالبد خود می‌باشند که مأموریت خطیر تشکیل گرهه‌های حاوی نیتروژن در سیستم ریشه‌ای گیاهان باقلایی و آغاز همزیستی متوازن جهت تثبیت کاتالیزوری آزاد اتمسفری را تسهیل می‌سازند.</p>
+
+        <div class="review-box" style="margin-top: 25px; margin-bottom: 25px;">
+            <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">سوالات مروری پلاسمیدها</h3>
+            <ol>
+                <li>ویژگی‌های اصلی و کالبد بیولوژیکی پلاسمیدها را نام ببرید. آن‌ها چه تمایزهای مستقلی با کروموزوم مادری نشان می‌دهند؟</li>
+                <li>مفهوم اپیزوم (Episome) را روشن نمایید. چه ویژگی‌هایی پلاسمیدهای الحاقی را متمایز می‌سازد؟</li>
+                <li>هر یک از انواع پلاسمیدهای غنی زیر را به صورت مجمل تشریح کرده و اهمیت زیستی آن‌ها را در اکولوژی حیات باکتری بیان فرمایید: فاکتور F، فاکتورهای R، پلاسمید Col، پلاسمیدهای ویرولانس (بیماری‌زا) و کاتالیزورهای متابولیک.</li>
+            </ol>
+        </div>
+
+    </div>
+
+
+        <!-- PAGE 55 -->
+        <div class="page-marker">صفحه ۵۵</div>
+
+        <h2>۳.۶ دیواره سلولی باکتریایی</h2>
+        <h3>دیواره سلولی باکتری</h3>
+        <p>دیواره سلولی لایه‌ای است که معمولاً نسبتاً صلب بوده و دقیقاً در خارج از غشای پلاسمایی قرار می‌گیرد. این ساختار به چندین دلیل یکی از مهم‌ترین ساختارهای پروکاریوتی به شمار می‌رود: به تعیین شکل سلول کمک می‌کند؛ از سلول در برابر لیز اسمزی محافظت می‌نماید؛ می‌تواند سلول را در برابر مواد سمی حفظ کند؛ و در پاتوژن‌ها (عوامل بیماری‌زا)، می‌تواند در بیماری‌زایی نقش داشته باشد. اهمیت دیواره سلولی در این واقعیت منعکس می‌شود که پروکاریوت‌های نسبتاً کمی فاقد دیواره سلولی هستند. آن‌هایی هم که فاقد آن هستند، ویژگی‌های دیگری دارند که وظایف دیواره سلولی را ایفا میا کنند. دیواره سلولی پروکاریوتی همچنین محل اثر چندین آنتی‌بیوتیک است. بنابراین، درک ساختار آن از اهمیت بالایی برخوردار است.</p>
+
+        <p>دیواره‌های سلولی باکتری‌ها (Bacteria) و آرکی‌ها (Archaea) از یکدیگر متمایز بوده و نمونه دیگری از ویژگی‌های مهمی هستند که این ارگانیسم‌ها را از هم جدا می‌کنند. در این بخش، ما بر روی دیواره‌های سلولی باکتریایی تمرکز می‌کنیم. ابتدا یک نمای کلی از ساختار دیواره سلولی باکتریایی ارائه می‌شود. پس از آن، بحث‌های دقیق‌تری درباره جنبه‌های خاص ساختار و عملکرد دیواره سلولی صورت می‌گیرد. دیواره‌های سلولی آرکی‌ها در بخش ۳.۷ مورد بحث قرار می‌گیرند.</p>
+
+        <h3>نمای کلی از ساختار دیواره سلولی باکتریایی</h3>
+        <p>پس از آنکه کریستین گرم در سال ۱۸۸۴ رنگ‌آمیزی گرم را ابداع کرد، به زودی مشخص شد که بیشتر باکتری‌ها را می‌توان بر اساس پاسخ آن‌ها به فرآیند رنگ‌آمیزی گرم به دو گروه بزرگ تقسیم کرد (به جدول ۱۹.۹ مراجعه کنید). باکتری‌های گرم‌مثبت به رنگ بنفش رنگ‌آمیزی شدند، در حالی که باکتری‌های گرم‌منفی با این تکنیک به رنگ صورتی یا قرمز درآمدند. تفاوت ساختاری واقعی بین این دو گروه تا زمان ظهور میکروسکوپ الکترونی عبوری (TEM) آشکار نشد. دیواره سلولی گرم‌مثبت شامل یک لایه همگن تک به ضخامت ۲۰ تا ۸۰ نانومتر از پپتیدوگلیکان (مورئین) است که در خارج از غشای پلاسمایی قرار دارد (شکل ۳.۱۷). در مقابل، دیواره سلولی گرم‌منفی کاملاً پیچیده است. این دیواره دارای یک لایه پپتیدوگلیکان ۲ تا ۷ نانومتری است که توسط یک غشای خارجی به ضخامت ۷ تا ۸ نانومتر پوشانده شده است. به دلیل ضخیم‌تر بودن لایه پپتیدوگلیکان، دیواره‌های سلول‌های گرم‌مثبت در برابر فشار اسمزی مقاوم‌تر از باکتری‌های گرم‌منفی هستند. میکروب‌شناسان اغلب به تمام ساختارهایی که از غشای پلاسمایی به سمت بیرون قرار دارند، پاکت سلولی (Cell Envelope) می‌گویند. بنابراین این پاکت شامل غشای پلاسمایی، دیواره سلولی و ساختارهایی مانند کپسول‌ها (صفحه ۶۵) در صورت وجود، می‌شود. (آماده‌سازی و رنگ‌آمیزی نمونه‌ها: رنگ‌آمیزی افتراقی - بخش ۲.۳)</p>
+
+        <p>یک ویژگی مهم پاکت سلولی، فضایی است که به طور مکرر بین غشای پلاسمایی و غشای خارجی در میکروگراف‌های الکترونی باکتری‌های گرم‌منفی دیده می‌شود و گاهی اوقات بین غشای پلاسمایی و دیواره در باکتری‌های گرم‌مثبت مشاهده می‌گردد. این فضا، فضای پری‌پلاسمی (Periplasmic space) نامیده می‌شود. ماده‌ای که فضای پری‌پلاسمی را اشغال می‌کند، پری‌پلاسم (Periplasm) نام دارد. ماهیت فضای پری‌پلاسمی و پری‌پلاسم در باکتری‌های گرم‌مثبت و گرم‌منفی متفاوت است. این تفاوت‌ها در بحث‌های دقیق‌تری که در ادامه می‌آید، مشخص شده‌اند.</p>
+
+        <h3>ساختار پپتیدوگلیکان</h3>
+        <p>پپتیدوگلیکان یا مورئین، یک پلیمر شبکه‌ای غول‌پیکر است که از واحدهای فرعی (subunits) یکسان بسیاری تشکیل شده است. این پلیمر حاوی دو مشتق قندی به نام‌های N-استیل‌گلوکوزامین (NAG) و N-استیل‌مورامیک اسید (NAM - اتر لاکتیل N-استیل‌گلوکوزامین) و چندین اسید آمینه مختلف است. سه مورد از این اسیدهای آمینه در پروتئین‌ها یافت نمی‌شوند: D-گلوتامیک اسید، D-آلانین، و مزو-دی‌آمینوپیملیک اسید (DAP). وجود D-آمینو اسیدها از دیواره در برابر تخریب توسط بیشتر پپتیدازها محافظت می‌کند، چرا که این آنزیم‌ها تنها ایزومرهای L بقایای اسید آمینه را شناسایی می‌کنند. واحد فرعی پپتیدوگلیکان موجود در بیشتر باکتری‌های گرم‌منفی و بسیاری از باکتری‌های گرم‌مثبت در شکل ۳.۱۸ نشان داده شده است. زنجیره اصلی این پلیمر از بقایای متناوب N-استیل‌گلوکوزامین و N-استیل‌مورامیک اسید تشکیل شده است.</p>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.17 Placeholder]<br>
+                Cell Walls: Gram-positive (Bacillus licheniformis) vs Gram-negative (Aquaspirillum serpens).<br>
+                M: Peptidoglycan layer; OM: Outer membrane; PM: Plasma membrane; P: Periplasmic space; W: Gram-positive peptidoglycan wall.
+            </div>
+            <figcaption>شکل ۳.۱۷ دیواره‌های سلولی گرم‌مثبت و گرم‌منفی.</figcaption>
+        </figure>
+
+        <!-- PAGE 56 -->
+        <div class="page-marker">صفحه ۵۶</div>
+
+        <p>یک زنجیره پپتیدی متشکل از چهار اسید آمینه متناوب D و L به گروه کربوکسیل N-استیل‌مورامیک اسید متصل است. بسیاری از باکتری‌ها مزو-دی‌آمینوپیملیک اسید را با دی‌آمینواسید دیگری، معمولاً L-لایزین، جایگزین می‌کنند (شکل ۳.۱۹). (کربوهیدرات‌ها - پیوست ۱: ساختار پپتیدوگلیکان و آندوسپور - بخش ۲۳.۳: پروتئین‌ها - پیوست I)</p>
+
+        <p>به منظور ایجاد یک پلیمر شبکه‌ای محکم، زنجیره‌های واحدهای فرعی پپتیدوگلیکانِ پیوندیافته باید توسط اتصالات متقاطع (cross-links) بین پپتیدها به یکدیگر متصل شوند. اغلب گروه کربوکسیل D-آلانین انتهایی مستقیماً به گروه آمین دی‌آمینوپیملیک اسید متصل می‌شود، اما ممکن است به جای آن از یک پل بین‌پپتیدی (peptide interbridge) استفاده شود (شکل ۳.۲۰). بیشتر پپتیدوگلیکان‌های دیواره سلولی گرم‌منفی فاقد پل بین‌پپتیدی هستند. این اتصالات متقاطع منجر به ایجاد یک کیسه پپتیدوگلیکانی بزرگ می‌شود که در واقع یک شبکه متراکم و به هم پیوسته است (شکل ۳.۲۱). این کیسه‌ها از باکتری‌های گرم‌مثبت جداسازی شده‌اند و به اندازه کافی محکم هستند که شکل و یکپارچگی خود را حفظ کنند (شکل ۳.۲۲)، با این حال آن‌ها نسبتاً متخلخل، الاستیک و تا حدودی کشسان هستند.</p>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.18 Placeholder]<br>
+                Peptidoglycan subunit composition in E. coli.<br>
+                NAG: N-acetylglucosamine; NAM: N-acetylmuramic acid. Tetrapeptide side chain consists of alternating D and L amino acids.
+            </div>
+            <figcaption>شکل ۳.۱۸ ترکیب واحد فرعی پپتیدوگلیکان.</figcaption>
+        </figure>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.19 Placeholder]<br>
+                (a) L-lysine. (b) meso-diaminopimelic acid.
+            </div>
+            <figcaption>شکل ۳.۱۹ دی‌آمینواسیدهای موجود در پپتیدوگلیکان.</figcaption>
+        </figure>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.20 Placeholder]<br>
+                (a) E. coli peptidoglycan with direct cross-link. (b) Staphylococcus aureus peptidoglycan with pentaglycine bridge.
+            </div>
+            <figcaption>شکل ۳.۲۰ اتصالات متقاطع پپتیدوگلیکان.</figcaption>
+        </figure>
+
+        <!-- PAGE 57 -->
+        <div class="page-marker">صفحه ۵۷</div>
+
+        <h3>دیواره‌های سلولی گرم‌مثبت</h3>
+        <p>باکتری‌های گرم‌مثبت معمولاً دارای دیواره‌های سلولی ضخیمی هستند که عمدتاً از پپتیدوگلیکان تشکیل شده است. پپتیدوگلیکان در باکتری‌های گرم‌مثبت اغلب حاوی یک پل بین‌پپتیدی است (شکل ۳.۲۱ و شکل ۳.۲۳). علاوه بر این، دیواره‌های سلولی گرم‌مثبت معمولاً حاوی مقادیر زیادی تیکوئیک اسید (teichoic acids) هستند؛ پلیمرهایی از گلیسرول یا ریبیتول که توسط گروه‌های فسفات به هم متصل شده‌اند (شکل ۳.۲۳ و شکل ۳.۲۴). اسیدهای آمینه مانند D-آلانین یا قندهایی مانند گلوکز به گروه‌های گلیسرول و ریبیتول متصل هستند. تیکوئیک اسیدها به طور کووالانسی یا به خود پپتیدوگلیکان یا به لیپیدهای غشای پلاسمایی متصل می‌شوند؛ در حالت دوم، به آن‌ها لیپوتیکوئیک اسید (lipoteichoic acids) می‌گویند. به نظر می‌رسد تیکوئیک اسیدها تا سطح پپتیدوگلیکان امتداد می‌یابند و از آنجا که دارای بار منفی هستند، به دیواره سلولی گرم‌مثبت بار منفی می‌بخشند. وظایف این مولکول‌ها هنوز کاملاً مشخص نیست، اما ممکن است در حفظ ساختار دیواره اهمیت داشته باشند. تیکوئیک اسیدها در باکتری‌های گرم‌منفی وجود ندارند.</p>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.21 Placeholder]<br>
+                Schematic model of peptidoglycan showing polysaccharide chains, tetrapeptide side chains, and peptide interbridges.
+            </div>
+            <figcaption>شکل ۳.۲۱ ساختار پپتیدوگلیکان.</figcaption>
+        </figure>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.22 Placeholder]<br>
+                Isolated peptidoglycan wall from Bacillus megaterium. Latex spheres are 0.25 μm in diameter.
+            </div>
+            <figcaption>شکل ۳.۲۲ دیواره سلولی گرم‌مثبت جداسازی شده.</figcaption>
+        </figure>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.23 Placeholder]<br>
+                Diagram of Gram-positive envelope: Peptidoglycan layer, periplasmic space, plasma membrane with teichoic and lipoteichoic acids.
+            </div>
+            <figcaption>شکل ۳.۲۳ پاکت گرم‌مثبت.</figcaption>
+        </figure>
+
+        <!-- PAGE 58 -->
+        <div class="page-marker">صفحه ۵۸</div>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.24 Placeholder]<br>
+                Structure of teichoic acid composed of phosphate, glycerol, and an R side chain (e.g., D-alanine, glucose).
+            </div>
+            <figcaption>شکل ۳.۲۴ ساختار تیکوئیک اسید.</figcaption>
+        </figure>
+
+        <p>فضای پری‌پلاسمی باکتری‌های گرم‌مثبت، در صورت مشاهده، بین غشای پلاسمایی و دیواره سلولی قرار دارد و کوچک‌تر از فضای پری‌پلاسمی باکتری‌های گرم‌منفی است. حتی اگر باکتری‌های گرم‌مثبت فاقد یک فضای پری‌پلاسمی مجزا و واضح باشند، ممکن است دارای پری‌پلاسم باشند. پری‌پلاسم پروتئین‌های نسبتاً کمی دارد؛ این احتمالاً به این دلیل است که کیسه پپتیدوگلیکانی متخلخل است و هر پروتئینی که توسط سلول ترشح می‌شود معمولاً از آن عبور می‌کند. آنزیم‌های ترشح شده توسط باکتری‌های گرم‌مثبت، اگزوآنزیم (exoenzymes) نامیده می‌شوند. آن‌ها اغلب برای تجزیه مواد مغذی پلیمری به کار می‌روند که در غیر این صورت برای انتقال از غشای پلاسمایی بسیار بزرگ خواهند بود. پروتئین‌هایی که در فضای پری‌پلاسمی باقی می‌مانند معمولاً به غشای پلاسمایی متصل هستند.</p>
+
+        <p>استافیلوکوک‌ها و بیشتر باکتری‌های گرم‌مثبت دیگر دارای لایه‌ای از پروتئین‌ها بر روی سطح پپتیدوگلیکان دیواره سلولی خود هستند. این پروتئین‌ها در برهم‌کنش‌های سلول با محیط آن نقش دارند. برخی از آن‌ها به طور غیرکووالانسی و از طریق اتصال به پپتیدوگلیکان، تیکوئیک اسیدها یا سایر گیرنده‌ها متصل می‌شوند. به عنوان مثال، پروتئین‌های لایه سطحی (S-layer) به طور غیرکووالانسی به پلیمرهای پراکنده در سراسر دیواره متصل می‌گردند. آنزیم‌های درگیر در سنتز و بازگرداندن (turnover) پپتیدوگلیکان نیز به نظر می‌رسد به طور غیرکووالانسی با دیواره سلولی تعامل دارند. سایر پروتئین‌های سطحی به طور کووالانسی به پپتیدوگلیکان متصل هستند. بسیاری از پروتئین‌های متصل به صورت کووالانسی، مانند پروتئین M در استرپتوکوک‌های بیماری‌زا، نقش‌هایی در ویرولانس (بیماری‌زایی) دارند، مانند کمک به چسبندگی به بافت‌های میزبان و مداخله در دفاع میزبان. در استافیلوکوک‌ها، این پروتئین‌های سطحی به طور کووالانسی به پل پنتاگلیسین پپتیدوگلیکان دیواره سلولی متصل می‌شوند. آنزیمی به نام سورتاز (sortase) اتصال این پروتئین‌های سطحی را به پپتیدوگلیکان گرم‌مثبت کاتالیز می‌کند. سورتازها به غشای پلاسمایی سلول باکتری متصل هستند.</p>
+
+        <h3>دیواره‌های سلولی گرم‌منفی</h3>
+        <p>حتی یک بررسی اجمالی از شکل ۳.۱۷ نشان می‌دهد که دیواره‌های سلولی گرم‌منفی بسیار پیچیده‌تر از دیواره‌های گرم‌مثبت هستند. لایه نازک پپتیدوگلیکان در مجاورت غشای پلاسمایی که از هر دو طرف توسط فضای پری‌پلاسمی محدود شده است، ممکن است بیش از ۵ تا ۱۰ درصد از وزن دیواره را تشکیل ندهد. در E. coli ضخامت آن حدود ۲ نانومتر است و تنها حاوی یک یا دو لایه پپتیدوگلیکان است. فضای پری‌پلاسمی باکتری‌های گرم‌منفی نیز به طور چشمگیری با باکتری‌های گرم‌مثبت متفاوت است. اندازه آن از ۱ نانومتر تا ۷۱ نانومتر متغیر است. برخی از مطالعات اخیر نشان می‌دهند که این فضا ممکن است حدود ۲۰ تا ۴۰ درصد از کل حجم سلول را تشکیل دهد و معمولاً ۳۰ تا ۷۰ نانومتر عرض دارد. هنگامی که دیواره‌های سلولی به دقت تخریب می‌شوند یا بدون آسیب رساندن به غشای پلاسمایی زیرین برداشته می‌شوند، آنزیم‌های پری‌پلاسمی و سایر پروتئین‌ها آزاد شده و به راحتی قابل مطالعه هستند. برخی از پروتئین‌های پری‌پلاسمی در جذب مواد مغذی مشارکت دارند - به عنوان مثال، آنزیم‌های هیدرولیتیک و پروتئین‌های انتقالی. برخی از پروتئین‌های پری‌پلاسمی در حفاظت از انرژی نقش دارند. به عنوان مثال، باکتری‌های دنیتریفیکاتور که نیترات را به گاز نیتروژن تبدیل می‌کنند، و باکتری‌هایی که از مولکول‌های معدنی به عنوان منابع انرژی استفاده می‌کنند (شیمولیتوتروف‌ها)، دارای پروتئین‌های انتقال الکترون در پری‌پلاسم خود هستند. سایر پروتئین‌های پری‌پلاسمی در سنتز پپتیدوگلیکان و تغییر ترکیب مواد سمی که می‌توانند به سلول آسیب برسانند، نقش دارند. (شیمولیتوتروفی - بخش ۹.۱۰: چرخه‌های بیوژئوشیمیایی: چرخه نیتروژن - بخش ۲۷.۲)</p>
+
+        <p>غشای خارجی در خارج از لایه نازک پپتیدوگلیکان قرار دارد (شکل‌های ۳.۲۵ و ۳.۲۶) و به دو روش به سلول متصل می‌شود. روش اول از طریق لیپوپروتئین برون (Braun's lipoprotein)، فراوان‌ترین پروتئین در غشای خارجی است. این لیپوپروتئین کوچک به طور کووالانسی به پپتیدوگلیکان زیرین متصل است و از طریق انتهای آب‌گریز خود در غشای خارجی قرار گرفته است. غشای خارجی و پپتیدوگلیکان به قدری محکم توسط این لیپوپروتئین به هم متصل شده‌اند که می‌توان آن‌ها را به عنوان یک واحد مجزا جداسازی کرد. مکانیسم اتصال دوم شامل سایت‌های چسبندگی متعدد (adhesion sites) است که غشای خارجی و غشای پلاسمایی را به هم متصل می‌کند. به نظر می‌رسد این دو غشا در این سایت‌ها در تماس مستقیم با یکدیگر هستند. در E. coli، نواحی تماس ۲۰ تا ۱۰۰ نانومتری بین دو غشا دیده می‌شود. سایت‌های چسبندگی ممکن است مناطقی از تماس مستقیم یا احتمالاً فیوژن‌های (همجوشی‌های) غشایی واقعی باشند. پیشنهاد شده است که مواد می‌توانند به طور مستقیم از طریق این سایت‌های چسبندگی به داخل سلول حرکت کنند، به جای اینکه از طریق پری‌پلاسم عبور نمایند.</p>
+
+        <p>احتمالاً غیرمعمول‌ترین اجزای غشای خارجی، لیپوپولی‌ساکاریدهای (LPSs) آن هستند. این مولکول‌های بزرگ و پیچیده حاوی لیپید و کربوهیدرات بوده و از سه بخش تشکیل شده‌اند: (۱) لیپید A، (۲) پلی‌ساکارید مرکزی (core)، و (۳) زنجیره جانبی O. لیپوپولی‌ساکارید مربوط به سالمونلا بیش از همه مورد مطالعه قرار گرفته و ساختار عمومی آن در اینجا توصیف شده است (شکل ۳.۲۷). ناحیه لیپید A حاوی دو مشتق قندی گلوکوزامین است که به هر کدام سه اسید چرب و فسفات یا پیروفسفات متصل است. اسیدهای چرب، لیپید A را به غشای خارجی متصل می‌کنند، در حالی که بقیه مولکول LPS از سطح به سمت بیرون برجسته می‌شود. پلی‌ساکارید مرکزی به لیپید A متصل است. در سالمونلا این بخش از ۱۰ قند ساخته شده است که ساختار بسیاری از آن‌ها غیرمعمول است.</p>
+
+        <!-- PAGE 59 -->
+        <div class="page-marker">صفحه ۵۹</div>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.25 Placeholder]<br>
+                Gram-negative envelope structure: Outer membrane containing LPS, porins, Braun's lipoprotein, periplasmic space with peptidoglycan layer, and underlying plasma membrane.
+            </div>
+            <figcaption>شکل ۳.۲۵ پاکت گرم‌منفی.</figcaption>
+        </figure>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.26 Placeholder]<br>
+                Chemical model of E. coli outer membrane. OmpF porin trimer shown with channels. LPS molecules extend outward.
+            </div>
+            <figcaption>شکل ۳.۲۶ یک مدل شیمیایی از غشای خارجی E. coli و ساختارهای مرتبط.</figcaption>
+        </figure>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.27 Placeholder]<br>
+                (a) Salmonella LPS structure. Lipid A embedded in membrane. Core polysaccharide and O side chain extending out.<br>
+                Abbreviations: Abe, Gal, Glc, GlcN, Hep, KDO, Man, NAG, P, Rha.<br>
+                (b) Molecular model of E. coli LPS.
+            </div>
+            <figcaption>شکل ۳.۲۷ ساختار لیپوپولی‌ساکارید.</figcaption>
+        </figure>
+
+        <p>زنجیره جانبی O یا آنتی‌ژن O یک زنجیره پلی‌ساکاریدی است که از بخش مرکزی به سمت بیرون امتداد می‌یابد. این بخش دارای چندین قند خاص است و ترکیب آن بین سویه‌های باکتریایی متفاوت است.</p>
+
+        <p>LPS عملکردهای مهم بسیاری دارد. از آنجا که پلی‌ساکارید مرکزی معمولاً حاوی قندهای باردار و فسفات است (شکل ۳.۲۷)، LPS به ایجاد بار منفی در سطح باکتری کمک می‌کند. لیپید A به عنوان جزء اصلی لایه خارجی غشای خارجی، به پایداری ساختار غشای خارجی نیز کمک می‌نماید. LPS ممکن است در اتصال باکتری به سطوح و تشکیل بیوفیلم نقش داشته باشد. یکی از عملکردهای اصلی LPS این است که به ایجاد یک سد نفوذپذیری کمک می‌کند. ساختار هندسی LPS (شکل ۳.۲۷b) و برهم‌کنش‌های بین مولکول‌های LPS مجاور به عنوان عاملی برای محدود کردن ورود نمک‌های صفراوی، آنتی‌بیوتیک‌ها و سایر مواد سمی که ممکن است باکتری را بکشند یا به آن آسیب برسانند، در نظر گرفته می‌شود. LPS همچنین در محافظت از باکتری‌های گرم‌منفی بیماری‌زا در برابر دفاع میزبان نقش دارد. زنجیره جانبی O از LPS آنتی‌ژن O نیز نامیده می‌شود زیرا پاسخ ایمنی را تحریک می‌کند. این پاسخ شامل تولید آنتی‌بادی‌هایی است که به شکل خاصی از LPS که پاسخ را تحریک کرده متصل می‌شوند. با این حال، بسیاری از باکتری‌های گرم‌منفی قادرند به سرعت ماهیت آنتی‌ژنیک زنجیره‌های جانبی O خود را تغییر دهند و در نتیجه دفاع میزبان را خنثی کنند. تذکر مهم این است که بخش لیپید A از LPS اغلب سمی است؛ در نتیجه، LPS می‌تواند به عنوان یک اندوتوکسین (endotoxin) عمل کند و برخی از علائمی را که در عفونت‌های باکتریایی گرم‌منفی بروز می‌کند، ایجاد نماید. اگر باکتری وارد جریان خون شود، اندوتوکسین LPS می‌تواند باعث نوعی شوک سپتیک (عفونی) شود که درمان مستقیمی برای آن وجود ندارد. (نمای کلی از بیماری‌زایی باکتریایی - بخش ۳۳.۳)</p>
+
+        <!-- PAGE 60 -->
+        <div class="page-marker">صفحه ۶۰</div>
+
+        <p>علیرغم نقش LPS در ایجاد سد نفوذپذیری، غشای خارجی نفوذپذیرتر از غشای پلاسمایی است و اجازه عبور مولکول‌های کوچک مانند گلوکز و سایر مونوساکاریدها را می‌دهد. این امر به دلیل وجود پروتئین‌های پورین (porin proteins) است (شکل‌های ۳.۲۵ و ۳.۲۶). بیشتر پروتئین‌های پورین به هم می‌پیوندند تا یک تریمر (کمپلکس سه‌تایی) را در غشای خارجی تشکیل دهند (شکل ۳.۲۵ و شکل ۳.۲۸). هر پروتئین پورین از غشای خارجی عبور می‌کند و کم و بیش لوله‌ای شکل است؛ کانال باریک آن اجازه عبور مولکول‌های کوچک‌تر از حدود ۶۰۰ تا ۷۰۰ دالتون را می‌دهد. با این حال، مولکول‌های بزرگ‌تر مانند ویتامین B12 نیز از غشای خارجی عبور می‌کنند. چنین مولکول‌های بزرگی از پورین‌ها عبور نمی‌کنند؛ در عوض، ناقل‌های اختصاصی آن‌ها را از غشای خارجی منتقل می‌نمایند.</p>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.28 Placeholder]<br>
+                Two views of OmpF porin in E. coli.<br>
+                (a) Top view showing trimer structure. Each protein forms a channel.<br>
+                (b) Side view of a monomer showing the characteristic β-barrel structure.
+            </div>
+            <figcaption>شکل ۳.۲۸ پروتئین‌های پورین.</figcaption>
+        </figure>
+
+        <h3>مکانیسم رنگ‌آمیزی گرم</h3>
+        <p>اگرچه توضیحات متعددی برای نتایج واکنش رنگ‌آمیزی گرم ارائه شده است، اما به نظر می‌رسد که تفاوت بین باکتری‌های گرم‌مثبت و گرم‌منفی به دلیل ماهیت فیزیکی دیواره‌های سلولی آن‌ها باشد. اگر دیواره سلولی از باکتری‌های گرم‌مثبت برداشته شود، آن‌ها به صورت گرم‌منفی رنگ‌آمیزی می‌شوند. علاوه بر این، باکتری‌هایی که از نظر ژنتیکی فاقد دیواره هستند، مانند مایکوپلاسماها، نیز به صورت گرم‌منفی رنگ‌آمیزی می‌شوند. خود پپتیدوگلیکان رنگ‌آمیزی نمی‌شود؛ در عوض به نظر می‌رسد که به عنوان یک سد نفوذپذیری عمل می‌کند و از خروج کریستال ویوله جلوگیری می‌نماید. در طول این فرآیند، باکتری‌ها ابتدا با کریستال ویوله رنگ‌آمیزی شده و سپس با ید درمان می‌شوند تا نگهداری رنگ تقویت شود. هنگامی که باکتری‌های گرم‌مثبت با اتانول درمان می‌شوند، تصور می‌شود که الکل باعث انقباض منافذ پپتیدوگلیکان ضخیم می‌گردد. بنابراین، کمپلکس رنگ-ید در طول این مرحله کوتاه رنگ‌زدایی (decolorization) حفظ می‌شود و باکتری‌ها بنفش باقی می‌مانند. در مقابل، به یاد آورید که پپتیدوگلیکان گرم‌منفی بسیار نازک است، اتصالات متقاطع کمتری دارد و دارای منافذ بزرگ‌تری است. درمان با الکل همچنین ممکن است لیپید کافی را از غشای خارجی گرم‌منفی استخراج کند تا تخلخل آن را بیشتر افزایش دهد. به این دلایل، الکل با سهولت بیشتری کمپلکس بنفش کریستال ویوله-ید را از باکتری‌های گرم‌منفی خارج می‌کند. بنابراین، باکتری‌های گرم‌منفی سپس به راحتی توسط رنگ متقابل (counterstain) سافرانین به رنگ قرمز یا صورتی در می‌آیند.</p>
+
+        <h3>دیواره سلولی و حفاظت اسمزی</h3>
+        <p>میکروب‌ها مکانیسم‌های متعددی برای پاسخ به تغییرات فشار اسمزی دارند. این فشار زمانی ایجاد می‌شود که غلظت مواد حل‌شده در داخل سلول با خارج از آن متفاوت باشد و پاسخ‌های تطابقی برای یکسان‌سازی غلظت مواد حل‌شده عمل می‌کنند. با این حال، در شرایط خاص، فشار اسمزی می‌تواند از توانایی سلول برای تطابق فراتر رود. در این موارد، حفاظت اضافی توسط دیواره سلولی فراهم می‌شود. هنگامی که سلول‌ها در محلول‌های هیپوتونیک قرار می‌گیرند - محلول‌هایی که غلظت مواد حل‌شده در آن‌ها کمتر از سیتوپلاسم است - آب به داخل سلول حرکت می‌کند و باعث تورم آن می‌شود. بدون دیواره سلولی، فشار روی غشای پلاسمایی به قدری زیاد می‌شود که دچار گسیختگی شده و سلول می‌ترکد - فرآیندی که لیز (lysis) نامیده می‌شود. برعکس، در محلول‌های هایپرتونیک، آب به سمت خارج جریان می‌یابد و سیتوپلاسم چروکیده می‌شود - فرآیندی که پلاسمولیز (plasmolysis) نام دارد.</p>
+
+        <p>ماهیت محافظتی دیواره سلولی زمانی به وضوح نشان داده می‌شود که سلول‌های باکتریایی با لیزوزیم یا پنی‌سیلین تیمار شوند. آنزیم لیزوزیم با هیدرولیز کردن پیوندی که N-استیل‌مورامیک اسید را به N-استیل‌گلوکوزامین متصل می‌کند، به پپتیدوگلیکان حمله می‌نماید (شکل ۳.۱۸). پنی‌سیلین با مکانیسم متفاوتی کار می‌کند. این دارو سنتز پپتیدوگلیکان را مهار می‌کند. اگر باکتری‌ها در حالی که در یک محلول هیپوتونیک هستند با هر یک از این مواد تیمار شوند، لیز خواهند شد. با این حال، اگر در یک محلول ایزوتونیک باشند، می‌توانند زنده بمانند و به طور طبیعی رشد کنند. اگر آن‌ها گرم‌مثبت باشند، تیمار با لیزوزیم یا پنی‌سیلین منجر به از دست رفتن کامل دیواره سلولی می‌شود و سلول به یک پروتوپلاست (protoplast) تبدیل می‌گردد. هنگامی که باکتری‌های گرم‌منفی در معرض لیزوزیم یا پنی‌سیلین قرار می‌گیرند، لایه پپتیدوگلیکان از دست می‌رود، اما غشای خارجی باقی می‌ماند. این سلول‌ها اسفروپلاست (spheroplasts) نامیده می‌شوند. به دلیل اینکه آن‌ها فاقد دیواره سلولی کامل هستند، هم پروتوپلاست‌ها و هم اسفروپلاست‌ها به اسمز حساس هستند. اگر آن‌ها به یک محلول رقیق منتقل شوند، به دلیل ورود کنترل‌نشده آب لیز خواهند شد (شکل ۳.۲۹). (داروهای ضدباکتری - بخش ۳۴.۴)</p>
+
+        <p>اگرچه بیشتر باکتری‌ها برای بقا به یک دیواره سلولی سالم نیاز دارند، برخی از آن‌ها اصلاً دیواره‌ای ندارند. به عنوان مثال، مایکوپلاسماها فاقد دیواره سلولی هستند و به اسمز حساس می‌باشند، با این حال اغلب می‌توانند در محیط‌های رقیق یا محیط‌های خشکی رشد کنند زیرا غشای پلاسمایی آن‌ها در برابر فشار اسمزی مقاوم‌تر از غشاهای باکتری‌های دارای دیواره است. دلیل دقیق این امر مشخص نیست، اگرچه وجود استرول‌ها در غشای بسیاری از گونه‌ها ممکن است استحکام بیشتری ایجاد کند. بدون وجود دیواره سلولی صلب، مایکوپلاسماها تمایل دارند پلی‌مورفیک (pleomorphic) یا از نظر شکل، متغیر باشند.</p>
+
+        <!-- PAGE 61 -->
+        <div class="page-marker">صفحه ۶۱</div>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.29 Placeholder]<br>
+                Formation of protoplast due to penicillin incubation in isotonic medium. Transfer to dilute medium leads to lysis.
+            </div>
+            <figcaption>شکل ۳.۲۹ تشکیل پروتوپلاست و لیز آن.</figcaption>
+        </figure>
+
+        <div class="review-box">
+            <h3>پرسش‌های مروری بخش ۳.۶</h3>
+            <ul>
+                <li>وظایف دیواره سلولی را فهرست کنید.</li>
+                <li>ترکیب و ساختار پپتیدوگلیکان را با جزئیات شرح دهید. چرا پپتیدوگلیکان حاوی ایزومرهای غیرمعمول D از آلانین و گلوتامیک اسید است، به جای ایزومرهای L که در پروتئین‌ها مشاهده می‌شوند؟</li>
+                <li>دیواره‌های سلولی باکتری‌های گرم‌مثبت و گرم‌منفی را با یکدیگر مقایسه و تضادهای آن‌ها را بیان کنید. نقشه‌های برچسب‌گذاری شده را در بحث خود بگنجانید.</li>
+                <li>موارد زیر را تعریف یا توصیف کنید: غشای خارجی، فضای پری‌پلاسمی، پری‌پلاسم، پاکت سلولی (انولوپ)، تیکوئیک اسید، سایت چسبندگی، لیپوپولی‌ساکارید، پروتئین پورین، پروتوپلاست‌ها و اسفروپلاست‌ها.</li>
+                <li>آزمایشی طراحی کنید که نقش دیواره سلولی را در محافظت در برابر لیز نشان دهد.</li>
+                <li>به جز چند استثنا، دیواره‌های سلولی باکتری‌های گرم‌مثبت فاقد پورین هستند. چرا این‌گونه است؟</li>
+            </ul>
+        </div>
+
+        <h2>۳.۷ دیواره‌های سلولی آرکی‌ها (ARCHAEAL CELL WALLS)</h2>
+        <p>پیش از آنکه آرکی‌ها به عنوان یک قلمرو (Domain) منحصربه‌فرد از حیات متمایز شوند، به عنوان گرم‌مثبت یا گرم‌منفی مشخص می‌شدند. با این حال، واکنش رنگ‌آمیزی آن‌ها به اندازه واکنش گرم در باکتری‌ها با یک ساختار دیواره سلولی خاص ارتباط قابل اعتمادی ندارد. ساختار و شیمی دیواره آرکی‌ها با باکتری‌ها متفاوت است. دیواره‌های سلولی آرکی‌ها فاقد پپتیدوگلیکان هستند و همچنین از نظر ترکیب شیمیایی خود تنوع چشمگیری نشان می‌دهند. برخی از ویژگی‌های اصلی دیواره‌های سلولی آرکی‌ها در این بخش شرح داده شده است.</p>
+
+        <p>بسیاری از آرکی‌ها دارای دیواره‌ای با یک لایه همگن ضخیم شبیه به لایه موجود در باکتری‌های گرم‌مثبت هستند (شکل ۳.۳۰a). این آرکی‌ها اغلب به صورت گرم‌مثبت رنگ‌آمیزی می‌شوند. شیمی دیواره آن‌ها از گونه‌ای به سویه دیگر متفاوت است اما معمولاً شامل هتروپولی‌ساکاریدهای پیچیده است. به عنوان مثال، متانوباکتریوم (Methanobacterium) و برخی دیگر از آرکی‌های تولیدکننده متان (متانوژن‌ها) دارای دیواره‌هایی حاوی سودومورئین (pseudomurein) هستند (شکل ۳.۳۱)؛ پلیمری شبیه به پپتیدوگلیکان که به جای D-آمینو اسیدها، دارای L-آمینو اسیدها در اتصالات متقاطع خود است، به جای N-استیل‌مورامیک اسید دارای N-استیل‌تالوزآمینورونیک اسید است و به جای پیوندهای گلیکوزیدی (1→4) دارای پیوندهای گلیکوزیدی (1→3) می‌باشد. آرکی‌های دیگر، مانند متانوسارسینا (Methanosarcina) و هالوکوکوس (Halococcus) دوستدار نمک، حاوی پلی‌ساکاریدهای پیچیده‌ای شبیه به کندروایتین سولفاتِ بافت همبند حیوانات هستند. (شاخه اوری‌آرکیوتا - متانوژن‌ها: هالوباکتری‌ها - بخش ۲۰.۳)</p>
+
+        <p>بسیاری از آرکی‌هایی که به صورت گرم‌منفی رنگ‌آمیزی می‌شوند، دارای لایه‌ای از گلیکوپروتئین یا پروتئین در خارج از غشای پلاسمایی خود هستند (شکل ۳.۳۰b). ضخامت این لایه ممکن است به ۲۰ تا ۴۰ نانومتر برسد. گاهی اوقات دو لایه وجود دارد - یک لایه متراکم از نظر الکترونی و یک غلاف (sheath) که آن را احاطه کرده است. برخی از متانوژن‌ها (Methanolobus)، آرکی‌های دوستدار نمک (Halobacterium) و ترموفیل‌های شدید (Sulfolobus، Thermoproteus و Pyrodictium) دارای گلیکوپروتئین در دیواره خود هستند. در مقابل، متانوژن‌های دیگر (Methanococcus، Methanomicrobium و Methanogenium) و ترموفیل شدید Desulfurococcus دارای دیواره‌های پروتئینی هستند. (شاخه کرنش‌آرکیوتا - بخش ۲۰.۲؛ شاخه اوری‌آرکیوتا: متابولیزه‌کننده‌های گوگرد به شدت ترموفیل - بخش ۲۰.۳)</p>
+
+        <!-- PAGE 62 -->
+        <div class="page-marker">صفحه ۶۲</div>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.30 Placeholder]<br>
+                Schematic diagrams and electron micrographs of Archaeal envelopes:<br>
+                (a) Methanobacterium formicicum<br>
+                (b) Thermoproteus tenax<br>
+                CW: Cell wall; SL: S-layer; CM: Cell membrane/Plasma membrane; CPL: Cytoplasm.
+            </div>
+            <figcaption>شکل ۳.۳۰ پاکت‌های سلولی آرکی‌ها.</figcaption>
+        </figure>
+
+        <div class="review-box">
+            <h3>پرسش‌های مروری بخش ۳.۷</h3>
+            <ul>
+                <li>دیواره‌های سلولی آرکی‌ها چه تفاوتی با دیواره‌های باکتری‌ها دارند؟</li>
+                <li>سودومورئین چیست؟ چه شباهت‌هایی با پپتیدوگلیکان دارد؟ چه تفاوت‌هایی دارد؟</li>
+                <li>آرکی‌هایی که دیواره سلولی آن‌ها شامل یک لایه ضخیم و همگن از پلی‌ساکاریدهای پیچیده است، اغلب هنگام رنگ‌آمیزی با استفاده از فرآیند رنگ‌آمیزی گرم، رنگ کریستال ویوله را حفظ می‌کنند. به نظر شما چرا این‌گونه است؟</li>
+            </ul>
+        </div>
+
+        <!-- PAGE 63 -->
+        <div class="page-marker">صفحه ۶۳</div>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.31 Placeholder]<br>
+                Structure of Pseudomurein.<br>
+                Amino acids and amino groups in parentheses are not always present. Ac denotes acetyl group.<br>
+                NHAc, β(1 →3), CH2OH, CO, Glu-(NH2), Ala, Lys, N-acetyltalosaminuronic acid, N-acetylglucosamine.
+            </div>
+            <figcaption>شکل ۳.۳۱: ساختار کاذب‌مورئین (Pseudomurein)</figcaption>
+        </figure>
+
+        <h2>۳.۸ ترشح پروتئین در پروکاریوت‌ها</h2>
+        <p>غشاهای پوشش سلولی پروکاریوتی (یعنی غشای پلاسمایی آرکی‌ها و باکتری‌های گرم مثبت، و غشاهای پلاسمایی و خارجی باکتری‌های گرم منفی) مانع بزرگی در برابر حرکت مولکول‌های بزرگ به داخل یا خارج از سلول ایجاد می‌کنند. با این حال، همانطور که در بخش ۳.۹ مورد بحث قرار خواهد گرفت، بسیاری از ساختارهای مهم در خارج از دیواره سلولی قرار دارند. مولکول‌های بزرگی که برخی از این ساختارها از آن‌ها ساخته شده‌اند، چگونه برای مونتاژ به خارج از سلول منتقل می‌شوند؟ علاوه بر این، اگزوآنزیم‌ها و پروتئین‌های دیگر از پروکاریوت‌ها به محیط اطرافشان آزاد می‌شوند. این پروتئین‌ها چگونه از غشا(های) پوشش سلولی عبور می‌کنند؟ مشخص است که پروکاریوت‌ها باید قادر به ترشح پروتئین‌ها باشند.</p>
+
+        <p>تحقیقات در مورد مسیرهای ترشح پروتئین در چند دهه اخیر به شدت رشد کرده است، که این امر تا حدودی به دلیل اهمیت بنیادی ترشح پروتئین و همچنین به این دلیل است که برخی مکانیسم‌های ترشح پروتئین در باکتری‌های بیماری‌زا (پاتوژن) مشترک هستند. علاوه بر این، درک ترشح پروتئین می‌تواند برای توسعه واکسن‌ها و انواع فرآیندهای صنعتی مورد استفاده قرار گیرد. از آنجایی که اطلاعات نسبتاً کمی در مورد سیستم‌های ترشح پروتئین آرکی‌ها در دست است، این بخش مروری بر مسیرهای ترشح پروتئین باکتریایی ارائه می‌دهد.</p>
+
+        <h3>مروری بر ترشح پروتئین باکتریایی</h3>
+        <p>ترشح پروتئین بسته به اینکه باکتری گرم مثبت باشد یا گرم منفی، مشکلات متفاوتی را ایجاد می‌کند. برای اینکه باکتری‌های گرم مثبت بتوانند پروتئین‌ها را ترشح کنند، پروتئین‌ها باید از غشای پلاسمایی عبور کنند. پس از عبور از غشای پلاسمایی، پروتئین یا از پپتیدوگلیکان نسبتاً متخلخل عبور کرده و وارد محیط خارجی می‌شود، یا اینکه در داخل پپتیدوگلیکان جاسازی شده یا به آن متصل می‌گردد.</p>
+
+        <p>باکتری‌های گرم منفی هنگام ترشح پروتئین‌ها با موانع بیشتری روبرو هستند. آن‌ها نیز باید پروتئین‌ها را از غشای پلاسمایی عبور دهند، اما برای تکمیل فرآیند ترشح، پروتئین‌ها باید بتوانند از حمله آنزیم‌های تجزیه‌کننده پروتئین در فضای پری‌پلاسمی فرار کنند و همچنین از غشای خارجی عبور نمایند.</p>
+
+        <p>در هر دو باکتری گرم مثبت و گرم منفی، مسیر اصلی برای انتقال پروتئین‌ها از عرض غشای پلاسمایی، مسیر وابسته به Sec (Sec-dependent یا وابسته به ترشح) است (شکل ۳.۳۲). در باکتری‌های گرم منفی، پروتئین‌ها می‌توانند توسط چندین مکانیسم مختلف از غشای خارجی عبور کنند که برخی از آن‌ها مسیر وابسته به Sec را به طور کامل دور می‌زنند و پروتئین‌ها را مستقیماً از سیتوپلاسم به خارج از سلول منتقل می‌کنند (شکل ۳.۳۳).</p>
+
+        <p>تمام مسیرهای ترشح پروتئین که در اینجا توصیف می‌شوند، نیاز به صرف انرژی در مرحله‌ای از فرآیند دارند. انرژی معمولاً توسط هیدرولیز مولکول‌های پرانرژی مانند ATP و GTP تأمین می‌شود، اما شکل دیگری از انرژی، یعنی نیروی محرکه پروتون (proton motive force)، نیز گاهی نقش ایفا می‌کند. [رجوع کنید به نقش ATP در متابولیسم (بخش ۸.۵)؛ زنجیره انتقال الکترون و فسفوریلاسیون اکسیداتیو (بخش ۹.۵)].</p>
+
+        <h3>مسیر وابسته به Sec (The Sec-Dependent Pathway)</h3>
+        <p>مسیر وابسته به Sec که گاهی مسیر ترشح عمومی (general secretion pathway) نامیده می‌شود، به شدت در تکامل حفظ شده و در هر سه قلمرو حیات شناسایی شده است (شکل ۳.۳۲). این مسیر پروتئین‌ها را از غشای پلاسمایی عبور می‌دهد (ترانسلوکاسیون) یا آن‌ها را در خود غشا ادغام می‌کند. پروتئین‌هایی که قرار است توسط این مسیر از غشای پلاسمایی عبور کنند، به عنوان پروتئین‌های پیش‌ترشحی سنتز می‌شوند که پیش‌پروتئین (preproteins) نامیده می‌شوند. پیش‌پروتئین دارای یک پپتید سیگنال (signal peptide) در انتهای آمینی خود است که توسط ماشین Sec شناسایی می‌شود.</p>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.32 Placeholder]<br>
+                Sec-dependent pathway in E. coli.<br>
+                Components: SecYEG (membrane channel), SecA (translocation motor), SecB (chaperone), Preprotein with NH4 and COOH ends, Cytoplasm, Plasma membrane, ATP → ADP + Pi consumption.
+            </div>
+            <figcaption>شکل ۳.۳۲: مسیر وابسته به Sec</figcaption>
+        </figure>
+
+        <!-- PAGE 64 -->
+        <div class="page-marker">صفحه ۶۴</div>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.33 Placeholder]<br>
+                Five protein secretion systems in Gram-negative bacteria.<br>
+                Sec and Tat pathways deliver proteins from cytoplasm to periplasmic space.<br>
+                Type II, Type V, and sometimes Type IV complete the secretion process initiated by Sec.<br>
+                Type I and Type III bypass Sec/Tat, moving proteins directly from cytoplasm to outside.<br>
+                Key components: TolC, Yop, YscJ, PulS, Tat, SecD EFGY, Sec, Chaperone, Periplasmic space, Outer membrane, Plasma membrane, Cytoplasm, Extracellular space.
+            </div>
+            <figcaption>شکل ۳.۳۳: سیستم‌های ترشح پروتئین در باکتری‌های گرم منفی</figcaption>
+        </figure>
+
+        <p>کمی پس از سنتز پپتید سیگنال، پروتئین‌های ویژه‌ای به نام پروتئین‌های چaperون یا همراه (مانند SecB) به آن متصل می‌شوند. این امر به تأخیر در تاخوردگی پروتئین کمک می‌کند و در نتیجه به پیش‌پروتئین کمک می‌کند تا با ساختار (کانفورماسیون) مناسب و لازم برای انتقال، به ماشین انتقال Sec برسد. شواهدی وجود دارد که ترانسلوکاسیون پروتئین‌ها می‌تواند قبل از اتمام سنتز آن‌ها توسط ریبوزوم‌ها آغاز شود.</p>
+
+        <p>تصور می‌شود که پروتئین‌های خاص Sec (شامل SecY، SecE و SecG) کانالی را در غشا تشکیل می‌دهند که پیش‌پروتئین از آن عبور می‌کند. پروتئین دیگری (SecA) به پروتئین‌های SecYEG و مجتمع SecB-پیش‌پروتئین متصل می‌شود. SecA به عنوان یک موتور عمل می‌کند تا پیش‌پروتئین (و نه پروتئین چaperون) را با استفاده از هیدرولیز ATP از غشای پلاسمایی عبور دهد. وقتی پیش‌پروتئین از غشای پلاسمایی خارج و از چaperون‌ها آزاد می‌شود، آنزیمی به نام سیگنال پپتیداز (signal peptidase) پپتید سیگنال را جدا می‌کند. سپس پروتئین به شکل صحیح خود تا می‌خورد و در صورت نیاز، پیوندهای دی‌سولفیدی تشکیل می‌شوند.</p>
+
+        <h3>ترشح پروتئین در باکتری‌های گرم منفی</h3>
+        <p>در حال حاضر پنج مسیر ترشح پروتئین در باکتری‌های گرم منفی شناسایی شده است (شکل ۳.۳۳). به یاد آورید که باکتری‌های گرم منفی دارای غشای دوم یا خارجی هستند که پروتئین‌ها باید از آن نیز عبور کنند.</p>
+
+        <!-- PAGE 65 -->
+        <div class="page-marker">صفحه ۶۵</div>
+
+        <h2>۳.۹ اجزای خارجی دیواره سلولی</h2>
+        <p>باکتری‌های گرم منفی از مسیرهای نوع II و نوع V برای انتقال پروتئین‌ها از غشای خارجی استفاده می‌کنند، پس از آنکه پروتئین ابتدا توسط مسیر وابسته به Sec از غشای پلاسمایی عبور کرده باشد. مسیرهای نوع I و نوع III با پروتئین‌هایی که ابتدا توسط سیستم Sec منتقل شده‌اند تعامل ندارند، بنابراین به آن‌ها مستقل از Sec (Sec-independent) گفته می‌شود. مسیر نوع IV گاهی به مسیر وابسته به Sec متصل است اما معمولاً به تنهایی عمل می‌کند.</p>
+
+        <p>مسیر ترشح پروتئین نوع II در تعدادی از پاتوژن‌های گیاهی و حیوانی از جمله Erwinia carotovora، Klebsiella pneumoniae، Pseudomonas aeruginosa و Vibrio cholerae وجود دارد. این سیستم مسئول ترشح پروتئین‌هایی مانند آنزیم‌های تجزیه‌کننده پولوولانازها، سلولازها، پکتینازها، پروتئازها و لیپازها و همچنین پروتئین‌های دیگری مانند سم کcontentرا (cholera toxin) و پروتئین‌های پیلی (pili) است. سیستم‌های نوع II بسیار پیچیده هستند و می‌توانند حاوی ۱۲ تا ۱۴ پروتئین باشند که بیشتر آن‌ها به نظر می‌رسد پروتئین‌های غشایی درونی (integral) باشند (شکل ۳.۳۳). اگرچه برخی از اجزای سیستم‌های نوع II در غشای پلاسمایی گسترده شده‌اند، اما ظاهراً پروتئین‌ها را تنها از غشای خارجی عبور می‌دهند. در بیشتر موارد، مسیر وابسته به Sec ابتدا پروتئین را از غشای پلاسمایی عبور می‌دهد و سپس سیستم نوع II فرآیند ترشح را تکمیل می‌کند.</p>
+
+        <p>در باکتری‌های گرم منفی و گرم مثبت، سیستم ترانسلوکاسیون غشایی دیگری به نام مسیر Tat نیز می‌تواند پروتئین‌ها را از غشای پلاسمایی عبور دهد. در گرم منفی‌ها، این پروتئین‌ها سپس به سیستم نوع II تحویل داده می‌شوند. مسیر Tat از این جهت با سیستم Sec متفاوت است که پروتئین‌های از قبل تاخورده و ساختاریافته را منتقل می‌کند.</p>
+
+        <p>مسیرهای ترشح پروتئین نوع V جدیدترین سیستم‌های ترشحی کشف شده هستند. آن‌ها نیز برای حرکت پروتئین‌ها از غشای پلاسمایی به مسیر وابسته به Sec متکی هستند. با این حال، پس از قرار گرفتن در فضای پری‌پلاسمی، بسیاری از این پروتئین‌ها قادر به تشکیل یک کانال در غشای خارجی هستند که از طریق آن خود را منتقل می‌کنند؛ به این پروتئین‌ها خود‌ترابری‌کننده (autotransporters) گفته می‌شود. پروتئین‌های دیگر توسط مسیر نوع V و با کمک یک پروتئین کمکی مجزا ترشح می‌شوند.</p>
+
+        <p>مسیر ترشح پروتئین ABC که نام خود را از ژن غشایی اتصال به ATP (ATP-binding cassette) گرفته است، در پروکاریوت‌ها فراگیر است، یعنی در باکتری‌های گرم مثبت و گرم منفی و همچنین آرکی‌ها وجود دارد. این مسیر گاهی سیستم ترشح پروتئین نوع I نامیده می‌شود (شکل ۳.۳۳). در باکتری‌های گرم منفی بیماری‌زا، این سیستم در ترشح سموم (آلفا-همولیزین) و همچنین پروتئازها، لیپازها و پپتیدهای خاص نقش دارد. پروتئین‌های ترشح شده معمولاً حاوی سیگنال‌های ترشحی در انتهای C (C-terminal) هستند که به هدایت پروتئین تازه سنتز شده به ماشین نوع I کمک می‌کند؛ ماشینی که غشای پلاسمایی، فضای پری‌پلاسمی و غشای خارجی را در بر می‌گیرد. این سیستم‌ها پروتئین‌ها را در یک مرحله از هر دو غشا عبور می‌دهند و مسیر وابسته به Sec را دور می‌زنند. باکتری‌های گرم مثبت از نسخه اصلاح‌شده سیستم نوع I برای انتقال پروتئین‌ها از غشای پلاسمایی استفاده می‌کنند. آنالیز ژنوم باکتری Bacillus subtilis تعداد ۷۷ انتقال‌دهنده ABC را شناسایی کرده است. این امر ممکن است نشان‌دهنده این واقعیت باشد که انتقال‌دهنده‌های ABC علاوه بر پروتئین‌ها، طیف وسیعی از مواد حل‌شونده از جمله قندها و اسیدهای آمینه را نیز منتقل می‌کنند و همچنین داروها را از داخل سلول به خارج صادر می‌نمایند.</p>
+
+        <p>چندین پاتوژن گرم منفی دارای مسیر ترشح پروتئین نوع III هستند، سیستم ترشحی دیگری که مسیر وابسته به Sec را دور می‌زند. بیشتر سیستم‌های نوع III فاکتورهای بیماری‌زایی (virulence factors) را مستقیماً به داخل سلول‌های میزبان گیاهی و حیوانی که این پاتوژن‌ها به آن‌ها حمله می‌کنند، تزریق می‌کنند. این فاکتورهای بیماری‌زایی شامل سموم، مهارکننده‌های فاگوسیتوز، محرک‌های سازماندهی مجدد اسکلت سلولی در سلول میزبان و تقویت‌کننده‌های خودکشی سلول میزبان (آپوپتوز) هستند. با این حال، در برخی موارد فاکتور بیماری‌زایی به سادگی به محیط خارج سلولی ترشح می‌شود. سیستم‌های نوع III از نظر ساختاری پیچیده بوده و اغلب شبیه سرنگ هستند (شکل ۳.۳۳). بخش باریک و سوزنی‌شکل از سطح سلول خارج می‌شود؛ یک پایه استوانه‌ای به غشای خارجی و غشای پلاسمایی متصل است و تا حدودی شبیه به جسم پایه تاژک (flagellar basal body) به نظر می‌رسد. تصور می‌شود که پروتئین‌ها ممکن است از طریق یک کانال انتقال حرکت کنند. نمونه‌های مهمی از باکتری‌های دارای سیستم نوع III عبارتند از: Salmonella ، Yersinia ، Shigella ، E. coli ، Bordetella ، Pseudomonas aeruginosa و Erwinia . مشارکت سیستم‌های نوع III در بیماری‌زایی باکتریایی بیشتر در فصل ۳۳ بحث شده است.</p>
+
+        <p>مسیرهای ترشح پروتئین نوع IV از این جهت منحصربه‌فرد هستند که هم برای ترشح پروتئین‌ها و هم برای انتقال DNA از یک باکتری دهنده به گیرنده در طول الحاق باکتریایی (باکتریال کونژوگاسیون) استفاده می‌شوند. سیستم‌های نوع IV از پروتئین‌های مختلفی تشکیل شده‌اند و مانند سیستم‌های نوع III، این پروتئین‌ها یک ساختار سرنگ‌مانند را تشکیل می‌دهند. سیستم‌های نوع IV و کونژوگاسیون با جزئیات بیشتر در فصل ۱۳ شرح داده شده‌اند.</p>
+
+        <div class="review-box">
+            <h3>پرسش‌های مروری بخش ۳.۸</h3>
+            <ul>
+                <li>ویژگی‌ها و عملکردهای اصلی مسیرهای ترشح پروتئین توصیف شده در این بخش را بیان کنید.</li>
+                <li>کدام مسیر ترشحی گسترده‌تر از همه است؟</li>
+                <li>پپتید سیگنال چیست؟ چرا فکر می‌کنید پپتید سیگنال یک پروتئین تا زمانی که پروتئین از غشای پلاسمایی عبور نکرده است، حذف نمی‌شود؟</li>
+            </ul>
+        </div>
+
+        <h3>کپسول‌ها، لایه‌های مخاطی (Slime Layers) و لایه‌های S (S-Layers)</h3>
+        <p>برخی از پروکاریوت‌ها لایه‌ای از مواد در خارج از دیواره سلولی خود دارند. این لایه بسته به ویژگی‌هایش نام‌های متفاوتی دارد. هنگامی که لایه به خوبی سازمان‌یافته باشد و به راحتی شسته نشود، کپسول (capsule) نامیده می‌شود (شکل ۳.۳۴الف). زمانی که لایه‌ای از مواد منتشر، بدون سازمان و سست باشد که به راحتی حذف می‌شود، لایه مخاطی (slime layer) نامیده می‌شود. هنگامی که لایه شامل شبکه‌ای از پلی‌ساکاریدها باشد که از سطح سلول امتداد می‌یابد، به آن گلیکوکالیکس (glycocalyx) می‌گویند؛ اصطلاحی که می‌تواند هم کپسول‌ها و هم لایه‌های مخاطی را در بر بگیرد زیرا آن‌ها معمولاً از پلی‌ساکاریدها تشکیل شده‌اند. با این حال، برخی از لایه‌های مخاطی و کپسول‌ها از مواد دیگری ساخته شده‌اند. به عنوان مثال، باکتری Bacillus anthracis دارای یک کپسول پروتئینی متشکل از پلی-D-گلوتامیک اسید است. کپسول‌ها در میکروسکوپ نوری هنگامی که از رنگ‌آمیزی منفی یا رنگ‌آمیزی‌های اختصاصی کپسول استفاده می‌شود، به وضوح قابل مشاهده هستند (شکل ۳.۳۴الف)؛ آن‌ها همچنین می‌توانند با میکروسکوپ الکترونی مطالعه شوند (شکل ۳.۳۴ب).</p>
+
+        <!-- PAGE 66 -->
+        <div class="page-marker">صفحه ۶۶</div>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.34 Placeholder]<br>
+                (a) Klebsiella pneumoniae with capsule stained for light microscopy (1500x).<br>
+                (b) TEM of Bacteroides glycocalyx (gly) (71250x).
+            </div>
+            <figcaption>شکل ۳.۳۴: کپسول‌های باکتریایی</figcaption>
+        </figure>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.35 Placeholder]<br>
+                Bacteria attached to each other and intestinal wall by glycocalyx; extensive networks of fibers extending from cells (17500x).
+            </div>
+            <figcaption>شکل ۳.۳۵: گلیکوکالیکس باکتریایی</figcaption>
+        </figure>
+
+        <p>اگرچه کپسول‌ها برای رشد و تکثیر در کشت‌های آزمایشگاهی ضروری نیستند، اما هنگام رشد پروکاریوت‌ها در زیستگاه‌های طبیعی خود، مزایای متعددی را به همراه دارند. آن‌ها به باکتری‌های بیماری‌زا کمک می‌کنند تا در برابر فاگوسیتوز توسط فاگوسیت‌های میزبان مقاومت کنند. باکتری Streptococcus pneumoniae یک مثال دراماتیک ارائه می‌دهد. هنگامی که این باکتری فاقد کپسول باشد، به راحتی نابود می‌شود و ایجاد بیماری نمی‌کند، در حالی که سویه کپسول‌دار آن به سرعت موش‌ها را می‌کشد. کپسول‌ها حاوی مقدار زیادی آب هستند و می‌توانند در برابر خشکی (desiccation) از سلول محافظت کنند. آن‌ها ویروس‌ها و بیشتر مواد سمی آب‌گریز (hydrophobic) مانند شوینده‌ها را دفع و از ورود آن‌ها جلوگیری می‌کنند. گلیکوکالیکس همچنین به اتصال به سطوح جامد، از جمله سطوح بافتی در میزبان‌های گیاهی و حیوانی کمک می‌کند (شکل ۳.۳۵). باکتری‌های لغزنده (gliding bacteria) اغلب مخاط تولید می‌کنند که در برخی موارد نشان داده شده است که حرکت را تسهیل می‌کند. [رجوع کنید به تنوع میکروبی و اکولوژی ۲۱.۱: مکانیسم حرکت لغزشی؛ فاگوسیتوز (بخش ۳۱.۳)؛ مروری بر بیماری‌زایی باکتریایی (بخش ۳۳.۳)].</p>
+
+        <p>بسیاری از پروکاریوت‌ها دارای لایه‌ای با ساختار منظم به نام لایه S (S-layer) بر روی سطح خود هستند. در باکتری‌ها، لایه S در خارج از دیواره سلولی قرار دارد. در آرکی‌ها، لایه S ممکن است تنها ساختار دیواره در خارج از غشای پلاسمایی باشد. لایه S الگویی شبیه به کاشی‌های کف دارد و از پروتئین یا گلیکوپروتئین تشکیل شده است (شکل ۳.۳۶). در باکتری‌های گرم منفی، لایه S مستقیماً به غشای خارجی می‌چسبد؛ این لایه در باکتری‌های گرم مثبت با سطح پپتیدوگلیکان مرتبط است. لایه S ممکن است از سلول در برابر نوسانات یون و pH، استرس اسمزی، آنزیم‌ها یا باکتری شکارچی Bdellovibrio محافظت کند. لایه S همچنین به حفظ شکل و استحکام پوشش برخی از سلول‌ها کمک می‌کند. این لایه می‌تواند چسبندگی سلول به سطوح را تقویت کند. در نهایت، به نظر می‌رسد لایه S از برخی پاتوژن‌های باکتریایی در برابر دفاع میزبان محافظت می‌کند و در نتیجه به بیماری‌زایی آن‌ها کمک می‌نماید. [رجوع کنید به کلاس دلتاپروتئوباکتریا، راسته Bdellovibrionales (بخش ۲۲.۴)].</p>
+
+        <h3>پیلی و فیمبریا (Pili and Fimbriae)</h3>
+        <p>بسیاری از پروکاریوت‌ها دارای زواید کوتاه، ظریف و مو مانند هستند که از تاژک‌ها نازک‌ترند. این زواید معمولاً فیمبریا (fimbriae) نامیده می‌شوند. اگرچه بسیاری از مردم اصطلاحات فیمبریا و پیلی را به جای یکدیگر استفاده می‌کنند، ما بین فیمبریا و پیلی جنسی (sex pili) تمایز قائل می‌شویم. سطح یک سلول ممکن است با حداکثر ۱۰۰۰ فیمبریا پوشانده شود، اما آن‌ها به دلیل اندازه کوچکشان تنها در میکروسکوپ الکترونی قابل مشاهده هستند (شکل ۳.۳۷). آن‌ها لوله‌های ظریفی هستند که از زیرواحدهای پروتئینی با آرایش مارپیچی تشکیل شده‌اند و قطر آن‌ها حدود ۳ تا ۱۰ نانومتر و طول آن‌ها تا چندین میکرومتر است. حداقل برخی از انواع فیمبریا، باکتری‌ها را به سطوح جامد مانند سنگ‌ها در نهرها و بافت‌های میزبان متصل می‌کنند. فیمبریاها مسئول چیزی بیش از اتصال هستند. پیلی نوع IV (Type IV fimbriae) در یک یا هر دو قطب سلول‌های باکتریایی وجود دارند. آن‌ها می‌توانند به اتصال به اشیاء کمک کنند و همچنین برای حرکت لرزشی یا جهشی (twitching motility) که در برخی از باکتری‌ها مانند P. aeruginosa، Neisseria gonorrhoeae و برخی از سویه‌های E. coli رخ می‌دهد، مورد نیاز هستند. حرکت به صورت حرکات تند و ناگهانی متناوب و کوتاه تا طول چندین میکرومتر است و به طور معمول روی سطوح بسیار مرطوب دیده می‌شود. شواهدی وجود دارد که فیمبریاها به طور فعال منقبض (پس‌کشیده) می‌شوند تا این باکتری‌ها را حرکت دهند.</p>
+
+        <!-- PAGE 67 -->
+        <div class="page-marker">صفحه ۶۷</div>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.36 Placeholder]<br>
+                Electron micrograph of S-layer of Deinococcus radiodurans after shadowing.
+            </div>
+            <figcaption>شکل ۳.۳۶: لایه S</figcaption>
+        </figure>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.37 Placeholder]<br>
+                Long flagella and numerous shorter fimbriae visible in this electron micrograph of Proteus vulgaris (39000x).
+            </div>
+            <figcaption>شکل ۳.۳۷: تاژک و فیمبریا</figcaption>
+        </figure>
+
+        <p>فیمبریاهای نوع IV همچنین در حرکت لغزشی توسط میکسوباکتری‌ها نقش دارند. این باکتری‌ها همچنین از این جهت جالب هستند که چرخه‌های زندگی پیچیده‌ای دارند که شامل تشکیل جسم بارده (fruiting body) می‌شود. [رجوع کنید به کلاس دلتاپروتئوباکتریا، راسته Myxococcales (بخش ۲۲.۴)].</p>
+
+        <p>بسیاری از باکتری‌ها حدود ۱ تا ۱۰ پیلی جنسی (sex pili) در هر سلول دارند. این‌ها ساختارهای مو مانندی هستند که از جنبه‌های زیر با فیمبریا تفاوت دارند: پیلی‌ها اغلب بزرگتر از فیمبریا هستند (حدود ۹ تا ۱۰ نانومتر قطر دارند). آن‌ها به طور ژنتیکی توسط پلاسمیدهای الحاقی (conjugative plasmids) تعیین می‌شوند و برای الحاق (کونژوگاسیون) مورد نیاز هستند. برخی از ویروس‌های باکتریایی (باکتریوفاژها) در شروع چرخه تکثیر خود، به طور اختصاصی به گیرنده‌های روی پیلی جنسی متصل می‌شوند. [رجوع کنید به الحاق باکتریایی (بخش ۱۳.۷)].</p>
+
+        <h3>تاژک و تحرک (Flagella and Motility)</h3>
+        <p>بیشتر پروکاریوت‌های متحرک با استفاده از تاژک (flagella)، زواید حرکتی رشته‌مانند که از غشای پلاسمایی و دیواره سلولی به سمت خارج امتداد می‌یابند، حرکت می‌کنند. تاژک‌های باکتریایی بهترین مطالعه را داشته‌اند و تمرکز این بحث بر روی آن‌هاست. تاژک‌های باکتریایی ساختارهای باریک و صُلبی هستند که عرض آن‌ها حدود ۲۰ نانومتر و طول آن‌ها تا ۱۵ یا ۲۰ میکرومتر است. تاژک‌ها به قدری نازک هستند که نمی‌توان آن‌ها را مستقیماً با میکروسکوپ زمینه روشن مشاهده کرد، بلکه باید با تکنیک‌های خاصی که برای افزایش ضخامت آن‌ها طراحی شده‌اند، رنگ‌آمیزی شوند. ساختار دقیق یک تاژک را فقط می‌توان در میکروسکوپ الکترونی دید (شکل ۳.۳۷).</p>
+
+        <p>گونه‌های باکتریایی اغلب به طور متمایزی در الگوهای توزیع تاژک خود تفاوت دارند و این الگوها در شناسایی باکتری‌ها مفید هستند. باکتری‌های تک‌تاژک یا مونوتریشوس (Monotrichous) دارای یک تاژک هستند؛ اگر در یک انتها قرار داشته باشد، به آن تاژک قطبی (polar flagellum) می‌گویند (شکل ۳.۳۸الف). باکتری‌های آمفی‌تریشوس (Amphitrichous) در هر قطب یک تاژک دارند. در مقابل، باکتری‌های لوفوتریشوس (Lophotrichous) دارای دسته‌ای از تاژک‌ها در یک یا هر دو انتها هستند (شکل ۳.۳۸ب). تاژک‌ها در باکتری‌های پری‌تریشوس (Peritrichous) به طور نسبتاً یکنواخت در تمام سطح سلول پخش شده‌اند (شکل ۳.۳۸ج).</p>
+
+        <h3>ساختار فوق‌ریخت غشایی تاژک (Flagellar Ultrastructure)</h3>
+        <p>مطالعات میکروسکوپ الکترونی عبوری نشان داده است که تاژک باکتری از سه بخش تشکیل شده است: (۱) طولانی‌ترین و واضح‌ترین بخش، رشته تاژک (flagellar filament) است که از سطح سلول تا نوک آن امتداد می‌یابد. (۲) یک جسم پایه (basal body) در سلول تعبیه شده است؛ و (۳) یک بخش کوتاه و منحنی، قلاب تاژک (flagellar hook)، رشته را به جسم پایه متصل می‌کند و به عنوان یک جفت‌کننده انعطاف‌پذیر عمل می‌نماید.</p>
+
+        <p>رشته یک استوانه توخالی و سفت است که از زیرواحدهای پروتئین تاژکین یا فلاژلین (flagellin) ساخته شده است که وزن مولکولی آن بسته به گونه باکتری از ۳۰۰۰۰ تا ۶۰۰۰۰ دالتون متغیر است. رشته با یک پروتئین کلاهک (capping protein) به پایان می‌رسد. برخی از باکتری‌ها دارای غلاف‌هایی هستند که تاژک‌های آن‌ها را احاطه کرده‌اند. به عنوان مثال، باکتری Bdellovibrio دارای ساختاری غشایی است که رشته را احاطه کرده است. باکتری Vibrio cholerae دارای غلاف لیپوپولی‌ساکاریدی است. قلاب و جسم پایه کاملاً با رشته متفاوت هستند (شکل ۳.۳۹). قلاب که کمی پهن‌تر از رشته است، از زیرواحدهای پروتئینی مختلفی ساخته شده است. جسم پایه پیچیده‌ترین بخش یک تاژک است. در E. coli و بیشتر باکتری‌های گرم منفی، جسم پایه دارای چهار حلقه است که به یک میله مرکزی متصل شده‌اند (شکل ۳.۳۹ الف، د). حلقه‌های خارجی L و P به ترتیب با لایه‌های لیپوپولی‌ساکارید و پپتیدوگلیکان مرتبط هستند. حلقه داخلی M با غشای پلاسمایی تماس دارد. باکتری‌های گرم مثبت تنها دو حلقه جسم پایه دارند؛ یک حلقه داخلی متصل به غشای پلاسمایی و یک حلقه خارجی که احتمالاً به پپتیدوگلیکان متصل است (شکل ۳.۳۹ب).</p>
+
+        <h3>سنتز تاژک (Flagellar Synthesis)</h3>
+        <p>سنتز تاژک باکتریایی یک فرآیند پیچیده است که حداقل ۲۰ تا ۳۰ ژن را در بر می‌گیرد. علاوه بر ژن فلاژلین، ۱۰ ژن یا بیشتر کدکننده پروتئین‌های قلاب و جسم پایه هستند؛ ژن‌های دیگر</p>
+
+        <!-- PAGE 68 -->
+        <div class="page-marker">صفحه ۶۸</div>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.38 Placeholder]<br>
+                Examples of different flagellation patterns as seen in light microscopy.<br>
+                (a) Polar monotrichous (Pseudomonas).<br>
+                (b) Lophotrichous (Spirillum).<br>
+                (c) Peritrichous (Proteus vulgaris, 600x).
+            </div>
+            <figcaption>شکل ۳.۳۸: توزیع تاژک</figcaption>
+        </figure>
+
+        <p>با کنترل ساختار یا عملکرد تاژک مرتبط هستند. نحوه تنظیم یا تعیین محل دقیق تاژک‌ها توسط سلول مشخص نیست. هنگامی که تاژک‌ها حذف می‌شوند، بازسازی رشته تاژک را می‌توان مطالعه کرد. انتقال بسیاری از اجزای تاژک توسط دستگاهی در جسم پایه انجام می‌شود که نوعی سیستم ترشح پروتئین نوع III تخصصی است. تصور می‌شود که زیرواحدهای فلاژلین از طریق هسته داخلی توخالی رشته منتقل می‌شوند. هنگامی که آن‌ها به نوک می‌رسند، زیرواحدها به طور خودبه‌خودی تحت هدایت یک کلاهک رشته‌ای خاص تجمع می‌یابند تا رشته به جای پایه، در نوک خود رشد کند (شکل ۳.۴۰). سنتز رشته یک نمونه عالی از خود‌مونتاژی (self-assembly) است. بسیاری از ساختارها به طور خودبه‌خودی از طریق ارتباط اجزای تشکیل‌دهنده خود بدون کمک آنزیم‌های خاص یا عوامل دیگر شکل می‌گیرند. اطلاعات مورد نیاز برای ساخت رشته در ساختار خود زیرواحد فلاژلین وجود دارد.</p>
+
+        <h3>مکانیسم حرکت تاژک</h3>
+        <p>تاژک‌های پروکاریوتی متفاوت از تاژک‌های یوکاریوتی عمل می‌کنند. رشته به شکل یک مارپیچ صُلب است و سلول زمانی حرکت می‌کند که این مارپیچ بچرخد. شواهد قابل توجهی نشان می‌دهد که تاژک‌ها درست مانند پروانه‌های یک قایق عمل می‌کنند. جهش‌یافته‌های باکتریایی با تاژک‌های مستقیم یا نواحی قلاب غیرطبیعی بلند نمی‌توانند شنا کنند. هنگامی که باکتری‌ها با استفاده از آنتی‌بادی‌های علیه پروتئین‌های رشته یا قلاب به یک لام شیشه‌ای متصل می‌شوند، بدنه سلول به سرعت حول تاژک ثابت می‌چرخد. اگر دانه‌های پلی‌استایرن-لاتکس به تاژک‌ها متصل شوند، دانه‌ها به دلیل چرخش تاژک حول محور تاژک می‌چرخند. موتور تاژک می‌تواند بسیار سریع بچرخد. موتور E. coli ۲۷۰ دور در ثانیه می‌چرخد؛ باکتری Vibrio alginolyticus به طور متوسط ۱۱۰۰ دور در ثانیه می‌چرخد. [رجوع کنید به مژک‌ها و تاژک‌ها (بخش ۴.۱۰)].</p>
+
+        <p>جهت چرخش تاژک، ماهیت حرکت باکتری را تعیین می‌کند. تاژک‌های قطبی و مونوتریشوس در طول حرکت نرمال به جلو، پادساعت‌گرد (وقتی از بیرون سلول مشاهده می‌شوند) می‌چرخند، در حالی که خود سلول به آرامی ساعت‌گرد می‌چرخد. رشته تاژک مارپیچی در حال چرخش، سلول را در یک «حرکت مستقیم و روان» (run) به جلو می‌راند در حالی که تاژک در پشت سر قرار دارد (شکل ۳.۴۱). باکتری‌های مونوتریشوس با معکوس کردن جهت چرخش تاژک، متوقف می‌شوند و به طور تصادفی «ملق می‌زنند» (tumble). باکتری‌های دارای تاژک پری‌تریشوس به روشی تا حدودی مشابه عمل می‌کنند. برای حرکت به جلو، تاژک‌ها پادساعت‌گرد می‌چرخند. همانطور که آن‌ها این کار را انجام می‌دهند، در قلاب‌های خود خم می‌شوند تا یک دسته در حال چرخش تشکیل دهند که سلول را به جلو می‌راند. چرخش ساعت‌گرد تاژک‌ها دسته را از هم گسیخته و سلول ملق می‌زند.</p>
+
+        <p>چون باکتری‌ها از طریق چرخش تاژک‌های سفت خود شنا می‌کنند، باید نوعی موتور در پایه وجود داشته باشد. میله‌ای از قلاب امتداد یافته و به حلقه M ختم می‌شود که می‌تواند آزادانه در غشای پلاسمایی بچرخد (شکل ۳.۴۲). تصور می‌شود که حلقه S در سلول‌های گرم مثبت به دیواره سلولی متصل است و نمی‌چرخد. حلقه‌های P و L باکتری‌های گرم منفی به عنوان یاتاقان (بلبرینگ) برای میله در حال چرخش عمل می‌کنند. شواهدی وجود دارد که جسم پایه یک ساختار غیرفعال است و در داخل یک مجتمع پروتئینی تعبیه شده در غشا می‌چرخد، درست همانطور که روتور یک موتور الکتریکی در مرکز حلقه‌ای از آهنرباهای الکتریکی (استاتور) می‌چرخد. مکانیسم دقیقی که چرخش جسم پایه را هدایت می‌کند کاملاً روشن نیست. شکل ۳.۴۲ تصویر دقیق‌تری از</p>
+
+        <!-- PAGE 69 -->
+        <div class="page-marker">صفحه ۶۹</div>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.39 Placeholder]<br>
+                Basal bodies and hooks of bacterial flagella in (a) Gram-negative and (b) Gram-positive bacteria.<br>
+                (c) Negatively stained flagella of E. coli (66000x).<br>
+                (d) Enlarged view of E. coli flagellar basal body (485000x). All four rings (L, P, S, M) clearly visible.<br>
+                Key terms: Filament, Hook, L ring, Outer membrane, P ring, Peptidoglycan layer, Periplasmic space, Rod, S ring, M ring, Plasma membrane.
+            </div>
+            <figcaption>شکل ۳.۳۹: ساختار فوق‌ریز تاژک‌های باکتریایی</figcaption>
+        </figure>
+
+        <p>جسم پایه در باکتری‌های گرم منفی را نشان می‌دهد. به نظر می‌رسد بخش روتور (rotor) موتور در درجه اول از یک میله، حلقه M و یک حلقه C متصل به آن در سمت سیتوپلاسمی جسم پایه ساخته شده است. این دو حلقه از چندین پروتئین ساخته شده‌اند؛ پروتئین FliG به ویژه در ایجاد چرخش تاژک مهم است. دو پروتئین مهم در بخش استاتور (stator) موتور MotA و MotB هستند. این‌ها یک کانال پروتونی را از طریق غشای پلاسمایی تشکیل می‌دهند و MotB همچنین مجتمع Mot را به پپتیدوگلیکان دیواره سلولی لنگر می‌کند. شواهدی وجود دارد که MotA و FliG مستقیماً در طول چرخش تاژک با یکدیگر تعامل دارند. این چرخش توسط شیب‌های پروتون یا سدیم در پروکاریوت‌ها هدایت می‌شود، نه مستقیماً توسط ATP آنطور که در مورد تاژک‌های یوکاریوتی صادق است. [رجوع کنید به زنجیره انتقال الکترون و فسفوریلاسیون اکسیداتیو (بخش ۹.۵)].</p>
+
+        <p>تاژک یک وسیله شنای بسیار مؤثر است. از دیدگاه باکتری، شنا کردن کار بسیار دشواری است زیرا آب اطراف به غلظت و چسبندگی ملاس (شیره قند) به نظر می‌رسد. سلول</p>
+
+        <!-- PAGE 70 -->
+        <div class="page-marker">صفحه ۷۰</div>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.40 Placeholder]<br>
+                Growth of flagellar filaments.<br>
+                Flagellin subunits move through the hollow core and attach to the growing tip guided by the filament cap protein.<br>
+                Terms: LPS, Flagellin, Filament cap protein, Outer membrane, Peptidoglycan, Plasma membrane, mRNA, Ribosome.
+            </div>
+            <figcaption>شکل ۳.۴۰: رشد رشته‌های تاژک</figcaption>
+        </figure>
+
+        <figure>
+            <div class="figure-placeholder">
+                [Figure 3.41 Placeholder]<br>
+                Relationship of flagellar rotation to bacterial movement.<br>
+                (a) & (b) describe monotrichous and polar bacteria movements.<br>
+                (c) & (d) show movements of peritrichous organisms.<br>
+                Terms: Forward run, Tumble.
+            </div>
+            <figcaption>شکل ۳.۴۱: تحرک تاژک.</figcaption>
+        </figure>
+
+        <p>باید با تاژک‌های پیچ‌گوشتی‌شکل خود راهش را در آب باز کند و اگر فعالیت تاژک متوقف شود، تقریباً فوراً باز می‌ایستد. با وجود چنین مقاومت محیطی در برابر حرکت، باکتری‌ها می‌توانند از ۲۰ تا نزدیک به ۹۰ µm/second شنا کنند. این معادل طی کردن ۲ تا بیش از ۱۰۰ طول سلول در ثانیه است. در مقابل، یک انسان فوق‌العاده سریع ۶ فوتی ممکن است بتواند حدود ۵ طول بدن در ثانیه بدود.</p>
+
+        <p>باکتری‌ها می‌توانند با مکانیسم‌هایی غیر از چرخش تاژک حرکت کنند. اسپیروکت‌ها (Spirochetes) باکتری‌های مارپیچی هستند که با حرکات انعطاف‌پذیری و چرخشی ناشی از یک رشته محوری خاص متشکل از تاژک‌های پری‌پلاسمی، در میان مواد چسبناک مانند مخاط یا گل حرکت می‌کنند. تحرک شنای باکتری مارپیچی Spiroplasma با ایجاد پیچ‌خوردگی‌هایی در بدنه سلول انجام می‌شود که در طول باکتری حرکت می‌کنند. نوع بسیار متفاوتی از تحرک، یعنی حرکت لغزشی (gliding motility)، توسط بسیاری از باکتری‌ها به کار گرفته می‌شود: سیانوباکتری‌ها، میکسوباکتری‌ها و سیتوفاگاها، و برخی مایکوپلاسماها. اگرچه هیچ ساختار خارجی قابل مشاهده‌ای در ارتباط با حرکت لغزشی وجود ندارد، اما حرکت در امتداد سطوح جامد را با سرعت حداکثر ۳ میکرومتر در ثانیه امکان‌پذیر می‌کند. [رجوع کنید به تنوع میکروبی و اکولوژی ۲۱.۱: مکانیسم حرکت لغزشی؛ شاخه اسپیروکت‌ها (بخش ۲۱.۶)؛ باکتری‌های فتوسنتزی (بخش ۲۱.۳)؛ کلاس مولیکوت‌ها (مایکوپلاسماها) (بخش ۲۳.۲)؛ کلاس دلتاپروتئوباکتریا: راسته میکسوکوکال‌ها (بخش ۲۲.۴)].</p>
+
+        <div class="review-box">
+            <h3>پرسش‌های مروری بخش ۳.۹</h3>
+            <ul>
+                <li>کپسول‌ها، لایه‌های مخاطی، گلیکوکالیکس‌ها و لایه‌های S را به طور خلاصه توصیف کنید. وظایف آن‌ها چیست؟</li>
+                <li>بین فیمبریا و پیلی جنسی تمایز قائل شوید و وظیفه هر کدام را بیان کنید.</li>
+                <li>بتوانید در مورد موارد زیر بحث کنید: الگوهای توزیع تاژک، ساختار و سنتز تاژک، و روشی که تاژک‌ها برای حرکت دادن باکتری عمل می‌کنند.</li>
+                <li>خود‌مونتاژی (self-assembly) چیست؟ چرا منطقی است که رشته تاژک به این روش مونتاژ شود؟</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        // Theme Toggle Logic
+        const toggleButton = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        // const themeText = document.getElementById('themeText');
+        const body = document.body;
+
+        // Check local storage or default to dark
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        body.setAttribute('data-theme', currentTheme);
+        updateButton(currentTheme);
+
+        toggleButton.addEventListener('click', () => {
+            const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateButton(newTheme);
+        });
+
+        function updateButton(theme) {
+            if (theme === 'dark') {
+                themeIcon.textContent = '☀️';
+                // themeText.textContent = 'Light';
+            } else {
+                themeIcon.textContent = '🌙';
+                // themeText.textContent = 'Dark';
+            }
+        }
+    </script>
+</body>
+</html>

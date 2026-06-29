@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>404 - SIGNAL LOST</title>
+        <style>
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+/* Base Setup */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            background-color: #050505;
+            color: #33ff33;
+            font-family: 'VT323', monospace;
+            font-size: 24px;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* CRT Screen Simulation */
+        .crt-container {
+            width: 100vw;
+            height: 100vh;
+            background: #0a110a;
+            position: relative;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-shadow: 0 0 4px rgba(51, 255, 51, 0.5), 0 0 10px rgba(51, 255, 51, 0.3);
+            animation: textFlicker 0.15s infinite;
+        }
+
+        /* Screen Vignette & Curved Bezel Shadow */
+        .crt-container::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.85) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Scanlines Layer */
+        .scanlines {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%,
+                rgba(0, 0, 0, 0.3) 50%
+                );
+            background-size: 100% 4px;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* Rolling Screen Glitch Interlacing */
+        .scanlines::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 0%, rgba(33, 255, 33, 0.05) 10%, rgba(18, 16, 16, 0) 20%);
+            animation: scrollLine 6s linear infinite;
+        }
+
+        /* Content Formatting */
+        .terminal-content {
+            max-width: 650px;
+            width: 100%;
+            text-align: left;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 5rem;
+            line-height: 1;
+            margin-bottom: 20px;
+            color: #33ff33;
+        }
+
+        .error-code {
+            background-color: #33ff33;
+            color: #0a110a;
+            padding: 2px 8px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+            text-shadow: none;
+        }
+
+        p {
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .command-prompt {
+            color: rgba(51, 255, 51, 0.7);
+        }
+
+        /* Blinking Underscore Cursor */
+        .cursor {
+            display: inline-block;
+            width: 12px;
+            height: 24px;
+            background-color: #33ff33;
+            animation: blink 0.8s infinite steps(1);
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+
+        .btn-home {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 5px 15px;
+            border: 2px solid #33ff33;
+            color: #33ff33;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-home:hover {
+            background-color: #33ff33;
+            color: #0a110a;
+            text-shadow: none;
+            cursor: pointer;
+        }
+
+        /* Keyframe Animations */
+        @keyframes textFlicker {
+            0% { opacity: 0.98; }
+            50% { opacity: 1; }
+            100% { opacity: 0.99; }
+        }
+
+        @keyframes scrollLine {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        </style>
+    </head>
+    <body>
+
+        <div class="crt-container">
+            <div class="scanlines"></div>
+
+            <div class="terminal-content">
+                <div class="error-code">ERROR_CODE: 0x00000194</div>
+                <h1>404 NOT FOUND</h1>
+                <p>A fatal exception has occurred at your request routing logic. The specified target vector could not be located in the current volume directory.</p>
+
+                <p class="command-prompt">VARDEN-OS V1.0.4<br>
+                > locate --missing-sectors<br>
+                > sector tracking timed out...<br>
+                > <span class="cursor"></span></p>
+
+                <a href="/" class="btn-home">REBOOT TO CORE SYSTEMS (HOME)</a>
+            </div>
+        </div>
+
+    </body>
+</html>

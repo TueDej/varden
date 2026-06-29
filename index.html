@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>varden</title>
+        <!-- Favicon: Axe Emoji -->
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪓</text></svg>">
+
+        <!-- Google Fonts: VT323 for retro terminal look -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+        <style>
+        :root {
+            /* Dark Theme (Default) */
+            --bg-color: #0a0a0a;
+            --text-color: #33ff33; /* Classic Terminal Green */
+            --accent-color: #33ff33;
+            --scanline-color: rgba(0, 0, 0, 0.5);
+            --button-bg: #111;
+            --button-border: #33ff33;
+            --button-hover-bg: #33ff33;
+            --button-hover-text: #000;
+            --shadow-glow: 0 0 10px rgba(51, 255, 51, 0.5);
+            --tap-highlight: transparent;
+            --ice-cream-opacity: 0.15;
+        }
+
+        [data-theme="light"] {
+            /* Light Theme */
+            --bg-color: #f0f4f8; /* Slightly icy blue-white */
+            --text-color: #222;
+            --accent-color: #ff85a2; /* Ice cream pink accent */
+            --scanline-color: rgba(255, 255, 255, 0.3);
+            --button-bg: #fff;
+            --button-border: #222;
+            --button-hover-bg: #ff85a2; /* originally: #222 */
+            --button-hover-text: #fff;
+            --shadow-glow: 0 0 5px rgba(0, 0, 0, 0.2);
+            --ice-cream-opacity: 0.25;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: var(--tap-highlight);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'VT323', monospace;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* CRT Scanline Effect Overlay */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                var(--scanline-color) 50%,
+                transparent 50%
+                );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0.6;
+        }
+
+        /* Floating Ice Cream Background */
+        .bg-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            font-size: 4rem;
+            opacity: var(--ice-cream-opacity);
+            animation: float 15s infinite linear;
+            filter: blur(1px);
+        }
+
+        /* Random positions and delays for ice creams */
+        .shape:nth-child(1) { top: 10%; left: 10%; animation-duration: 20s; font-size: 3rem; }
+        .shape:nth-child(2) { top: 70%; left: 80%; animation-duration: 25s; animation-delay: -5s; font-size: 5rem; }
+        .shape:nth-child(3) { top: 40%; left: 20%; animation-duration: 18s; animation-delay: -2s; font-size: 4rem; }
+        .shape:nth-child(4) { top: 80%; left: 10%; animation-duration: 22s; animation-delay: -10s; font-size: 3.5rem; }
+        .shape:nth-child(5) { top: 20%; left: 70%; animation-duration: 28s; animation-delay: -8s; font-size: 4.5rem; }
+        .shape:nth-child(6) { top: 50%; left: 90%; animation-duration: 19s; animation-delay: -3s; font-size: 3rem; }
+
+        @keyframes cyberPulse {
+            0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 2px #00ff00); }
+            50% { opacity: 1; filter: drop-shadow(0 0 8px #00ff00); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-35px) rotate(12deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            5% { opacity: 0.95; }
+            10% { opacity: 0.9; }
+            15% { opacity: 0.95; }
+            20% { opacity: 0.99; }
+            50% { opacity: 0.95; }
+            80% { opacity: 0.9; }
+            100% { opacity: 0.97; }
+        }
+
+        .container {
+            text-align: center;
+            z-index: 5;
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            animation: flicker 0.15s infinite;
+            margin: auto 0;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: var(--shadow-glow);
+            letter-spacing: 2px;
+        }
+
+        .welcome-msg {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+
+        .service-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .service-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--button-bg);
+            border: 2px solid var(--button-border);
+            color: var(--text-color);
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 1.3rem;
+            transition: all 0.2s ease;
+            position: relative;
+            box-shadow: 4px 4px 0px var(--button-border);
+        }
+
+        .service-btn:hover {
+            background-color: var(--button-hover-bg);
+            color: var(--button-hover-text);
+            box-shadow: 4px 4px 0px var(--button-hover-bg);
+            cursor: pointer;
+        }
+
+        .btn-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .emoji-icon {
+            font-size: 1.5rem;
+        }
+
+        .description {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            text-align: right;
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .footer {
+            margin-top: 3rem;
+            font-size: 0.8rem;
+            opacity: 0.5;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            padding: 5px 10px;
+            font-family: 'VT323', monospace;
+            cursor: pointer;
+            z-index: 20;
+            font-size: 1rem;
+        }
+
+        .theme-toggle:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5rem; }
+            .service-btn {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .description {
+                text-align: left;
+                max-width: 100%;
+                font-size: 0.8rem;
+                margin-top: 5px;
+            }
+            .shape { font-size: 3rem !important; }
+        }
+    </style>
+    </head>
+
+    <body data-theme="dark">
+
+        <div class="crt-overlay"></div>
+
+        <div class="bg-shapes">
+            <div class="shape">🍦</div>
+            <div class="shape">🍨</div>
+            <div class="shape">🍧</div>
+            <div class="shape">🍦</div>
+            <div class="shape">🍨</div>
+            <div class="shape">🍧</div>
+        </div>
+
+        <button class="theme-toggle" id="themeToggle">[ LIGHT ]</button>
+
+        <div class="container">
+            <h1>VARDEN</h1>
+            <p class="welcome-msg">System Online. Welcome, User.</p>
+
+            <div class="service-list">
+                <!-- Copyparty Link -->
+                <a href="https://copyparty.varden.ir" class="service-btn">
+                    <div class="btn-left">
+                        <span class="emoji-icon">📂</span>
+                        <span>Copyparty</span>
+                    </div>
+                    <span class="description">File Storage</span>
+                </a>
+
+                <!-- Jellyfin Link -->
+                <a href="https://jellyfin.varden.ir" class="service-btn">
+                    <div class="btn-left">
+                        <span class="emoji-icon">🍿</span>
+                        <span>Jellyfin</span>
+                    </div>
+                    <span class="description">Media Server</span>
+                </a>
+
+                <!-- Snikket Link -->
+                <a href="#" class="service-btn">
+                    <div class="btn-left">
+                        <span class="emoji-icon">💬</span>
+                        <span>Snikket</span>
+                    </div>
+                    <span class="description">Chat Server</span>
+                </a>
+            </div>
+
+            <div class="footer">
+                <p>⚠️ Access may be restricted.</p>
+            </div>
+        </div>
+
+        <script>
+            const toggleBtn = document.getElementById('themeToggle');
+            const body = document.body;
+
+            // Check local storage for preference
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme) {
+                body.setAttribute('data-theme', currentTheme);
+                updateButtonText(currentTheme);
+            }
+
+            toggleBtn.addEventListener('click', () => {
+                const current = body.getAttribute('data-theme');
+                const newTheme = current === 'dark' ? 'light' : 'dark';
+
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateButtonText(newTheme);
+            });
+
+            function updateButtonText(theme) {
+                toggleBtn.textContent = theme === 'dark' ? '[ LIGHT ]' : '[ DARK ]';
+            }
+        </script>
+    </body>
+</html>
