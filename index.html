@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Varden — personal services hub: file storage, media server, chat, card game, and digital library.">
         <title>varden</title>
         <!-- Favicon: Axe Emoji -->
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪓</text></svg>">
@@ -187,11 +188,13 @@
             box-shadow: 4px 4px 0px var(--button-border);
         }
 
-        .service-btn:hover {
-            background-color: var(--button-hover-bg);
-            color: var(--button-hover-text);
-            box-shadow: 4px 4px 0px var(--button-hover-bg), 0 0 15px var(--button-hover-bg);
-            cursor: pointer;
+        @media (hover: hover) {
+            .service-btn:hover {
+                background-color: var(--button-hover-bg);
+                color: var(--button-hover-text);
+                box-shadow: 4px 4px 0px var(--button-hover-bg), 0 0 15px var(--button-hover-bg);
+                cursor: pointer;
+            }
         }
 
         .btn-left {
@@ -253,9 +256,15 @@
             font-size: 1rem;
         }
 
-        .theme-toggle:hover {
-            background: var(--text-color);
-            color: var(--bg-color);
+        @media (hover: hover) {
+            .theme-toggle:hover {
+                background: var(--text-color);
+                color: var(--bg-color);
+            }
+        }
+
+        body.animations-paused * {
+            animation-play-state: paused !important;
         }
 
         @media (max-width: 600px) {
@@ -266,14 +275,21 @@
                 gap: 10px;
             }
             .description {
-                display: none;
+                font-size: 0.8rem;
             }
             .shape { font-size: 3rem !important; }
         }
     </style>
+    <script>
+        (function() {
+            var saved = localStorage.getItem('theme');
+            var theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     </head>
 
-    <body data-theme="dark">
+    <body>
 
         <div class="crt-overlay"></div>
 
@@ -288,11 +304,11 @@
 
         <button class="theme-toggle" id="themeToggle">[ LIGHT ]</button>
 
-        <div class="container">
+        <main class="container">
             <h1>VARDEN</h1>
             <p class="welcome-msg">System Online. Welcome, User.</p>
 
-            <div class="service-list">
+            <nav class="service-list" aria-label="Services">
                 <!-- Copyparty Link -->
                 <a href="https://copyparty.varden.ir" class="service-btn">
                     <div class="btn-left">
@@ -342,16 +358,16 @@
                     </div>
                     <span class="description">Library</span>
                 </a>
-            </div>
+            </nav>
 
-            <div class="footer">
+            <footer class="footer">
                 <p>⚠️ Access may be restricted.</p>
-            </div>
-        </div>
+            </footer>
+        </main>
 
         <script>
             const toggleBtn = document.getElementById('themeToggle');
-            const body = document.body;
+            const docEl = document.documentElement;
 
             // Typing effect for welcome message
             const welcomeMsg = document.querySelector('.welcome-msg');
@@ -369,18 +385,14 @@
 
             typeWriter();
 
-            // Check local storage for preference
-            const currentTheme = localStorage.getItem('theme');
-            if (currentTheme) {
-                body.setAttribute('data-theme', currentTheme);
-                updateButtonText(currentTheme);
-            }
+            // Sync toggle button text with theme set by head script
+            updateButtonText(docEl.getAttribute('data-theme'));
 
             toggleBtn.addEventListener('click', () => {
-                const current = body.getAttribute('data-theme');
+                const current = docEl.getAttribute('data-theme');
                 const newTheme = current === 'dark' ? 'light' : 'dark';
 
-                body.setAttribute('data-theme', newTheme);
+                docEl.setAttribute('data-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
                 updateButtonText(newTheme);
             });
@@ -388,6 +400,11 @@
             function updateButtonText(theme) {
                 toggleBtn.textContent = theme === 'dark' ? '[ LIGHT ]' : '[ DARK ]';
             }
+
+            // Pause animations when tab is not visible
+            document.addEventListener('visibilitychange', () => {
+                document.body.classList.toggle('animations-paused', document.hidden);
+            });
         </script>
     </body>
 </html>
