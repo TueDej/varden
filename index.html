@@ -156,6 +156,15 @@
             opacity: 0.8;
         }
 
+        .welcome-msg::after {
+            content: '█';
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
         .service-list {
             display: flex;
             flex-direction: column;
@@ -181,7 +190,7 @@
         .service-btn:hover {
             background-color: var(--button-hover-bg);
             color: var(--button-hover-text);
-            box-shadow: 4px 4px 0px var(--button-hover-bg);
+            box-shadow: 4px 4px 0px var(--button-hover-bg), 0 0 15px var(--button-hover-bg);
             cursor: pointer;
         }
 
@@ -189,6 +198,20 @@
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #33ff33;
+            box-shadow: 0 0 6px #33ff33;
+            margin-left: 8px;
+        }
+
+        .status-dot.offline {
+            background-color: #ff3333;
+            box-shadow: 0 0 6px #ff3333;
         }
 
         .emoji-icon {
@@ -233,15 +256,12 @@
         @media (max-width: 600px) {
             h1 { font-size: 2.5rem; }
             .service-btn {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
+                flex-direction: row;
+                align-items: center;
+                gap: 10px;
             }
             .description {
-                text-align: left;
-                max-width: 100%;
-                font-size: 0.8rem;
-                margin-top: 5px;
+                display: none;
             }
             .shape { font-size: 3rem !important; }
         }
@@ -273,6 +293,7 @@
                     <div class="btn-left">
                         <span class="emoji-icon">📂</span>
                         <span>Copyparty</span>
+                        <span class="status-dot"></span>
                     </div>
                     <span class="description">File Storage</span>
                 </a>
@@ -282,6 +303,7 @@
                     <div class="btn-left">
                         <span class="emoji-icon">🍿</span>
                         <span>Jellyfin</span>
+                        <span class="status-dot"></span>
                     </div>
                     <span class="description">Media Server</span>
                 </a>
@@ -291,6 +313,7 @@
                     <div class="btn-left">
                         <span class="emoji-icon">💬</span>
                         <span>Snikket</span>
+                        <span class="status-dot offline"></span>
                     </div>
                     <span class="description">Chat Server</span>
                 </a>
@@ -300,6 +323,7 @@
                     <div class="btn-left">
                         <span class="emoji-icon">🃏</span>
                         <span>Hokm</span>
+                        <span class="status-dot"></span>
                     </div>
                     <span class="description">Card Game</span>
                 </a>
@@ -309,6 +333,7 @@
                     <div class="btn-left">
                         <span class="emoji-icon">📚</span>
                         <span>Books</span>
+                        <span class="status-dot"></span>
                     </div>
                     <span class="description">Library</span>
                 </a>
@@ -322,6 +347,22 @@
         <script>
             const toggleBtn = document.getElementById('themeToggle');
             const body = document.body;
+
+            // Typing effect for welcome message
+            const welcomeMsg = document.querySelector('.welcome-msg');
+            const text = welcomeMsg.textContent;
+            welcomeMsg.textContent = '';
+            let i = 0;
+
+            function typeWriter() {
+                if (i < text.length) {
+                    welcomeMsg.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 50);
+                }
+            }
+
+            typeWriter();
 
             // Check local storage for preference
             const currentTheme = localStorage.getItem('theme');
