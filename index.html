@@ -97,7 +97,6 @@
             position: absolute;
             font-size: 4rem;
             opacity: var(--ice-cream-opacity);
-            animation: float 15s infinite linear;
             filter: blur(1px);
         }
 
@@ -112,12 +111,6 @@
         @keyframes cyberPulse {
             0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 2px #00ff00); }
             50% { opacity: 1; filter: drop-shadow(0 0 8px #00ff00); }
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-35px) rotate(12deg); }
-            100% { transform: translateY(0) rotate(0deg); }
         }
 
         @keyframes flicker {
