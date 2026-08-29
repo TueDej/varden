@@ -284,21 +284,36 @@
 
         .footer-col a:hover { color: var(--surface); }
 
+        .contact-rows {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            column-gap: 24px;
+            row-gap: 10px;
+            align-items: baseline;
+        }
+
+        .contact-label { font-size: 0.87rem; color: #667085; }
+
+        .contact-rows p { margin-bottom: 0; text-align: right; }
+        .contact-rows a { margin-bottom: 0; text-align: right; }
+
         .footer-badges { display: flex; align-items: center; gap: 20px; margin-bottom: 40px; flex-wrap: wrap; }
 
         #enemad-logo {
-            width: 110px;
-            height: 110px;
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            padding: 10px;
+            width: fit-content;
+            height: fit-content;
+            line-height: 0;
         }
 
-        #enemad-logo img { max-width: 100%; max-height: 100%; }
+        #enemad-logo img {
+            display: block;
+            width: 88px;
+            height: auto;
+        }
 
         .footer-bottom {
             border-top: 1px solid rgba(255,255,255,0.08);
@@ -313,6 +328,12 @@
         }
 
         .footer-domain {
+            font-family: 'Martian Mono', ui-monospace, monospace;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+        }
+
+        .mono {
             font-family: 'Martian Mono', ui-monospace, monospace;
             font-weight: 500;
             letter-spacing: -0.02em;
@@ -486,14 +507,19 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <h4>واردن — Varden</h4>
+                    <h4>واردن — <span class="mono" dir="ltr">Varden</span></h4>
                     <p>ارائه‌دهنده خدمات طراحی وب‌سایت، ساخت اپلیکیشن و توسعه نرم‌افزار سفارشی برای کسب‌وکارهای ایرانی.</p>
                 </div>
                 <div class="footer-col">
                     <h4>اطلاعات تماس</h4>
-                    <a href="mailto:info@varden.ir">info@varden.ir</a>
-                    <p>تلفن: <span dir="ltr">۰۷۱-۵۳۲۳۲۳۶۷</span></p>
-                    <p>آدرس: فارس، شیراز</p>
+                    <div class="contact-rows">
+                        <span class="contact-label">ایمیل</span>
+                        <a href="mailto:info@varden.ir" class="mono" dir="ltr">info@varden.ir</a>
+                        <span class="contact-label">تلفن</span>
+                        <p><span dir="ltr">۰۷۱-۵۳۲۳۲۳۶۷</span></p>
+                        <span class="contact-label">آدرس</span>
+                        <p>فارس، شیراز</p>
+                    </div>
                 </div>
                 <div class="footer-col">
                     <h4>دسترسی سریع</h4>
