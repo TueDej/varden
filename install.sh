@@ -2,7 +2,7 @@
 
 set -e
 
-DEST="/var/www/varden"
+DEST="/var/www/jargedon"
 
 sudo mkdir -p "$DEST"
 sudo cp index.html 404.html hanna-notes.html "$DEST/"
